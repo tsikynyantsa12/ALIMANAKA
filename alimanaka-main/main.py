@@ -67,7 +67,7 @@ def draw_header(c, width, height, page_num, global_data):
 
 def generate_calendar():
     c = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)
-    year = 2025
+    year = 2026
     draw_background(c, PAGE_SIZE[0], PAGE_SIZE[1])
     draw_page(c, year, 1, 6, 1)
     c.showPage()
