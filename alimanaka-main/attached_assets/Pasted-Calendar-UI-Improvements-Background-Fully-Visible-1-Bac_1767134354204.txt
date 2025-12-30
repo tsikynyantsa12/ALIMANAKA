@@ -1,0 +1,203 @@
+Calendar UI Improvements (Background Fully Visible)
+1. Background Image (Strict Rule Applied)
+What is NOT allowed
+
+❌ No blur
+
+❌ No dark overlay
+
+❌ No white opacity layer covering the image
+
+❌ No masking or cropping
+
+What IS allowed
+
+✅ Full HD background image, 100% visible
+
+✅ Background image scales proportionally
+
+✅ Background image stays sharp
+
+Layout rule
+
+The background image is purely decorative
+
+All readability improvements come from borders, spacing, typography, and positioning, not from hiding the image
+
+2. Content Positioning (Image Always Visible)
+
+Calendar content floats on top of the background
+
+No solid blocks covering large areas
+
+Use:
+
+thin borders
+
+subtle outlines
+
+text shadows (very light)
+
+✅ The image is always visible between lines, columns, and text
+
+3. Month Layout
+
+One column per month
+
+Clear vertical separation using:
+
+thin lines
+
+spacing only (no backgrounds)
+
+Month titles:
+
+Uppercase
+
+Bold
+
+Positioned at the top
+
+No background rectangle
+
+Example:
+
+SEPTEMBER
+──────────────
+
+4. Day Cells (No Background Fill)
+
+Days are transparent
+
+Separation by:
+
+horizontal lines (1px, low opacity)
+
+vertical spacing
+
+Day number aligned left
+
+Day name smaller and lighter
+
+Sunday
+
+Sunday text in a soft red
+
+No background color
+
+5. Events Display (Minimal & Transparent)
+
+Events have:
+
+no background fill
+
+no cards
+
+Use:
+
+colored left border (2–3px)
+
+icon + text only
+
+Example:
+
+│ 10:30 Mass – Choir
+
+
+This keeps the photo fully visible behind the content.
+
+6. Icons Usage
+
+Maximum one icon per event
+
+Small size
+
+Neutral colors
+
+Icons must not overlap text
+
+Purpose: visual hint, not decoration
+
+7. Typography (Key for Readability)
+
+Since we cannot use background blocks, typography becomes critical:
+
+Font: DejaVu Sans / Inter / Roboto
+
+High weight contrast:
+
+Month: Bold
+
+Day: Medium
+
+Event: Regular
+
+Use text shadow (very subtle):
+
+offset: 1px
+
+opacity: very low
+
+This improves readability without hiding the image.
+
+8. Color System (Low Saturation)
+
+Text: near-black or near-white depending on image
+
+Accent colors:
+
+Blue → Mass
+
+Green → Meeting
+
+Orange → Celebration
+
+Red → Important / Sunday
+
+⚠ Use muted tones only
+
+9. Spacing & Rhythm
+
+Increase vertical spacing instead of backgrounds
+
+Clear separation between:
+
+weeks
+
+days
+
+events
+
+Whitespace becomes the main structure.
+
+10. Today Highlight (No Background)
+
+Outline around the day number
+
+Slight color accent
+
+No fill, no shadow block
+
+11. Navigation & Orientation
+
+Thin grid lines (low opacity)
+
+Consistent alignment across months
+
+Visual rhythm helps scanning without blocking the image
+
+12. Print & Screen Compatibility
+
+Background image stays visible in print
+
+Avoid very light text
+
+Maintain strong typography contrast
+
+Final Result
+
+✔ Full background image always visible
+✔ No blur, no overlays, no masks
+✔ Clean, modern calendar
+✔ Readable through typography, spacing, and structure
+✔ Fully compatible with Python-generated layouts (PDF or image)

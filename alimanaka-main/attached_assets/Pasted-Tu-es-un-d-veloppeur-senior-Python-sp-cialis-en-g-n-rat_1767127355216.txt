@@ -1,0 +1,161 @@
+Tu es un développeur senior Python spécialisé en génération PDF professionnelle.
+Tu dois créer une application Python complète qui génère automatiquement
+un calendrier A3 paysage (2 pages, 6 mois par page) à partir de fichiers CSV.
+
+========================
+OBJECTIF DU PROJET
+========================
+
+Générer un PDF A3 paysage très stylisé :
+- 2 pages
+- 6 mois par page (mois verticaux, gauche → droite)
+- Calendrier combiné :
+  - Liturgique (dimanches, couleurs, versets)
+  - Église (programmes journaliers)
+  - Agricole (icônes uniquement)
+  - Phases lunaires
+  - Jours fériés
+- Qualité impression professionnelle
+
+========================
+CONTRAINTES TECHNIQUES
+========================
+
+- Langage : Python 3.11+
+- Génération PDF : ReportLab
+- Images : Pillow
+- Données : CSV (compatibles Excel)
+- Aucun framework web
+- Fonctionnement offline
+- Code modulaire, lisible, pédagogique (niveau L2 Génie Logiciel)
+
+========================
+STRUCTURE DU PROJET
+========================
+
+calendar_pdf/
+│
+├── main.py                      # Point d’entrée
+│
+├── config/
+│   ├── page.py                  # Format A3 paysage, marges
+│   ├── colors.py                # Couleurs liturgiques
+│   ├── fonts.py                 # Polices
+│
+├── data/
+│   ├── global/
+│   │   ├── couleurs_liturgiques.csv
+│   │   ├── cultures.csv
+│   │   ├── actions_agricoles.csv
+│   │   ├── phases_lunaires.csv
+│   │   ├── logos.csv
+│   │   └── entetes.csv
+│   │
+│   ├── mois/
+│   │   ├── 01_janvier/
+│   │   │   ├── dimanches.csv
+│   │   │   ├── programme_eglise.csv
+│   │   │   ├── programme_agricole.csv
+│   │   │   └── jours_feries.csv
+│   │   └── ...
+│
+├── layout/
+│   ├── header.py                # En-tête (logos + texte)
+│   ├── day_row.py               # Une ligne = un jour
+│   ├── month_block.py           # Un mois complet
+│   └── page_block.py            # 6 mois par page
+│
+├── utils/
+│   ├── csv_loader.py            # Chargement CSV
+│   ├── date_utils.py            # Jours, mois, dimanches
+│   └── icon_mapper.py           # Emoji / icônes
+│
+├── assets/
+│   ├── images/
+│   │   ├── background_eglise.jpg
+│   │   ├── logo_eglise.png
+│   │   └── logo_agri.png
+│   └── fonts/
+│
+└── output/
+    └── calendrier_A3.pdf
+
+========================
+MISE EN PAGE EXACTE
+========================
+
+FORMAT :
+- A3 paysage (420 × 297 mm)
+- 2 pages
+- Marges fines
+- Image de fond église légère (opacity faible)
+
+STRUCTURE D’UN JOUR (ligne horizontale) :
+
+[ GAUCHE | CENTRE | DROITE ]
+
+GAUCHE (étroit) :
+- Numéro du jour
+- Nom du jour (Lun, Mar…)
+- Fond coloré selon couleur liturgique
+- Pas de surcharge
+
+CENTRE (large) :
+- Nom du dimanche (si existant)
+- Versets bibliques (sur une ligne)
+- Programmes de l’église
+- Jours fériés
+- Icône phase lunaire
+
+DROITE (étroit) :
+- Icônes agricoles uniquement
+- 1 action = 1 ligne
+- Plusieurs actions possibles par jour
+
+========================
+STYLE GRAPHIQUE
+========================
+
+- Typographie lisible, élégante
+- Couleurs liturgiques pastel
+- Icônes agricoles discrètes
+- Grille propre
+- Pas de surcharge visuelle
+- Priorité lisibilité impression
+
+========================
+FONCTIONNALITÉS ATTENDUES
+========================
+
+- Lecture automatique des CSV
+- Support multi-actions agricoles par jour
+- Couleurs liturgiques dynamiques
+- Phases lunaires sous forme d’icônes
+- Génération automatique du PDF
+- Code commenté, clair, structuré
+
+========================
+BONNES PRATIQUES
+========================
+
+- Fonctions courtes
+- Noms explicites
+- Séparation claire :
+  - données
+  - logique
+  - rendu
+- Prévoir extension future :
+  - CSV → automatisation complète
+  - multi-années
+
+========================
+RÉSULTAT FINAL
+========================
+
+Un fichier :
+output/calendrier_A3.pdf
+
+- 2 pages
+- 6 mois par page
+- Qualité impression professionnelle
+- Conforme à la conception liturgique et agricole

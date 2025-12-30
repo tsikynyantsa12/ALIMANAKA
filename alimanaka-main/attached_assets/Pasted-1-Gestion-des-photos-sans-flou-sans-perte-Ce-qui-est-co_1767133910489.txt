@@ -1,0 +1,186 @@
+1. Gestion des photos (sans flou, sans perte)
+✔ Ce qui est conservé
+
+Photos nettes
+
+Photos HD
+
+Photos visibles en arrière-plan ou en bandeau
+
+✔ Améliorations autorisées
+
+Cadres blancs semi-opaques AUTOUR du texte (pas sur l’image)
+
+Ombres légères pour détacher le texte
+
+Dégradé léger (opaque → transparent) UNIQUEMENT sous le texte
+
+👉 Les images ne sont jamais modifiées, seulement le texte est mieux posé dessus.
+
+2. Organisation générale du calendrier
+Structure recommandée (respect des consignes)
+
+Affichage multi-mois côte à côte (comme actuellement)
+
+1 colonne = 1 mois
+
+Pas de superposition chaotique
+
+Amélioration
+
+Séparateurs verticaux fins entre mois
+
+Marges internes plus larges
+
+3. Hiérarchie visuelle (très important)
+Mois
+
+Bandeau en haut du mois
+
+Couleur unie (pas image)
+
+Texte blanc ou très foncé
+
+Police large + gras
+
+Exemple :
+
+NOVEMBRE
+────────────
+
+Jours
+
+Numéro du jour aligné à gauche
+
+Jour (Dimanche, Lundi…) plus discret
+
+Dimanche
+
+Fond légèrement coloré (sans image)
+
+Bord gauche coloré (rouge doux)
+
+4. Événements (lisibilité maximale)
+Chaque événement devient un “bloc”
+
+Fond blanc opaque (90–95 %)
+
+Coins légèrement arrondis
+
+Ombre très douce
+
+Texte
+
+Titre en gras
+
+Détails en plus petit
+
+Icônes
+
+1 seule icône par événement
+
+Taille fixe
+
+Alignée à droite ou à gauche
+
+❌ Pas d’empilement d’icônes
+
+5. Couleurs (sobres, cohérentes)
+Palette limitée
+
+Gris foncé (texte)
+
+Blanc (cartes)
+
+Bleu (messe)
+
+Vert (réunion)
+
+Orange (fête)
+
+Rouge doux (important / dimanche)
+
+⚠ Jamais plus de 5 couleurs actives
+
+6. Espacement (sans changer le contenu)
+Ajustements clés
+
+Hauteur des lignes +15 %
+
+Espaces entre jours +10 %
+
+Espaces entre événements +8 %
+
+👉 Résultat : même contenu, beaucoup plus lisible
+
+7. Typographie (compatible Python)
+Police conseillée
+
+DejaVu Sans (parfait pour PDF Python)
+
+Inter ou Roboto si supportées
+
+Tailles recommandées
+
+Mois : 16–18 pt
+
+Jour : 12–13 pt
+
+Événement : 10–11 pt
+
+8. Navigation & repères visuels
+Aujourd’hui
+
+Contour coloré
+
+Icône discrète
+
+Aucun effet sur la photo
+
+Semaine
+
+Ligne horizontale très fine
+
+Couleur gris clair
+
+9. Mode clair / sombre (sans toucher aux images)
+Mode clair
+
+Cartes blanches
+
+Texte noir
+
+Mode sombre
+
+Cartes gris foncé
+
+Texte blanc
+
+Photos inchangées
+
+10. Impression PDF (important)
+Optimisations
+
+Marges régulières
+
+Pas d’éléments collés aux bords
+
+Couleurs imprimables (pas trop saturées)
+
+11. Respect strict de tes consignes ✅
+Consigne	Respect
+Pas de flou	✅ 100 %
+Photos nettes	✅
+Calendrier dense	✅
+Multi-mois	✅
+Python compatible	✅
+Lisibilité améliorée	✅
+Résultat final attendu
+
+Photos nettes et visibles
+
+Texte clair et lisible
+
+Interface professionnelle
+
+Aucun effet interdit (flou, masque, altération image)

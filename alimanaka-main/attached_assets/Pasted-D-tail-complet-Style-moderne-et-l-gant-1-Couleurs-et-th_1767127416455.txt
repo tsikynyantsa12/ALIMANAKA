@@ -1,0 +1,154 @@
+Détail complet – Style moderne et élégant
+1. Couleurs et thèmes
+Palette principale
+
+Couleurs liturgiques (pastel / doux pour impression)
+
+Vert : #a8d5ba (Temps ordinaire)
+
+Rouge : #f1948a (Martyrs / Esprit Saint)
+
+Violet : #c39bd3 (Avent / Carême)
+
+Blanc : #fefefe (Fêtes du Christ)
+
+Couleur de fond générale
+
+A3 : blanc cassé ou beige clair (#fafafa) pour éviter fatigue visuelle
+
+Texte
+
+Noir ou gris foncé (#333333) pour le corps
+
+Couleur liturgique uniquement sur le fond de la colonne gauche
+
+Icônes
+
+Couleurs vives mais harmonisées avec pastel
+
+2. Typographie
+
+Police moderne et lisible :
+
+Sans-serif : Helvetica, Arial, Lato
+
+Serif : Times New Roman ou Georgia (option pour titres)
+
+Poids :
+
+Titre mois / dimanche : Bold
+
+Versets bibliques / programme : Regular
+
+Tailles :
+
+Numéro du jour : 12–14 pt
+
+Nom du jour : 10–12 pt
+
+Versets et programmes : 8–10 pt
+
+Titres de mois : 16–18 pt
+
+3. Marges et espacement
+
+Marges A3 : ~15–20 mm
+
+Colonne gauche : 15–20 mm
+
+Colonne centrale : 2–3 fois plus large que la gauche
+
+Colonne droite : 15–20 mm
+
+Espacement vertical entre jours : 4–6 mm
+
+Padding autour des icônes : 2 mm
+
+4. Structure des blocs
+4.1 En-tête
+
+Logos à gauche et droite (from CSV logos.csv)
+
+Texte centré (plusieurs lignes si nécessaire, depuis entetes.csv)
+
+Fond léger ou transparent
+
+Séparateur discret (ligne fine)
+
+4.2 Bloc jour
+
+Colonne gauche
+
+Numéro + nom du jour
+
+Rectangle coloré (liturgique)
+
+Coins arrondis pour style moderne
+
+Colonne centrale
+
+Nom du dimanche : bold + couleur douce
+
+Verset biblique : italique, gris foncé
+
+Programme église : normal
+
+Jour férié : rouge clair si civil ou violet si religieux
+
+Icône phase lunaire : petite taille, centrée verticalement
+
+Colonne droite
+
+Icônes agricoles
+
+1 ligne par action
+
+Alignement centré verticalement
+
+Taille icône 10–12 pt, uniformisée
+
+4.3 Mois
+
+Chaque mois vertical
+
+Fond très léger différent pour différencier mois
+
+Séparateur discret entre mois (ligne fine ou ombrée)
+
+5. Effets graphiques modernes
+
+Rectangles arrondis pour chaque jour
+
+Ombres légères derrière les blocs (simulées avec couleur légèrement plus foncée)
+
+Lignes de séparation fines et discrètes
+
+Icones vectorielles ou emojis Unicode
+
+Background image église avec opacité 0.1 à 0.2 pour ne pas gêner lecture
+
+Harmonisation des couleurs pour impression pastel
+
+6. Icônes et images
+
+Agricoles : 🌾, 🌱, 🧹, 🌰
+
+Phases lunaires : 🌑, 🌓, 🌕, 🌗
+
+Logos : à gauche / droite
+
+Background : image de l’église, très légère
+
+7. Répartition des pages
+
+Page 1 : Jan → Juin
+
+Page 2 : Juil → Déc
+
+Chaque mois vertical
+
+Bloc mois = largeur équivalente pour les 6 mois
+
+Alignement harmonieux, moderne et épuré
+
+8. Exemple de style (concept visuel)
