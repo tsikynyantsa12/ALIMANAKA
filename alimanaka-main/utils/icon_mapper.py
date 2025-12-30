@@ -1,11 +1,11 @@
 import os
 
 ICONS = {
-    # Agricultural icons
-    "recolte": "assets/icons/recolte.jpg",
-    "semis": "assets/icons/semis.jpg",
-    "entretien": "assets/icons/entretien.jpg",
-    "plantation": "assets/icons/plantation.jpg",
+    # Agricultural actions - new emoji-style icons
+    "recolte": "assets/icons/recolte_new.png",
+    "semis": "assets/icons/semis_new.png",
+    "entretien": "assets/icons/entretien_new.png",
+    "plantation": "assets/icons/plantation_new.png",
     
     # Lunar phases - new emoji-style icons
     "nouvelle_lune": "assets/icons/nouvelle_lune.png",
@@ -21,11 +21,18 @@ ICONS = {
     "premier_croissant": "assets/icons/premier_croissant.png",
     "dernier_croissant": "assets/icons/dernier_croissant.png",
     
-    # Cultures
-    "riz": "assets/icons/cultures/riz.jpg",
-    "manioc": "assets/icons/cultures/manioc.jpg",
-    "haricot": "assets/icons/cultures/haricot.jpg",
-    "mais": "assets/icons/cultures/mais.jpg",
+    # Cultures - new emoji-style icons
+    "riz": "assets/icons/mais_new.png",
+    "manioc": "assets/icons/manioc_new.png",
+    "haricot": "assets/icons/haricot_new.png",
+    "mais": "assets/icons/mais_new.png",
+    "arachide": "assets/icons/arachide.png",
+    
+    # Legacy fallback
+    "riz_legacy": "assets/icons/cultures/riz.jpg",
+    "manioc_legacy": "assets/icons/cultures/manioc.jpg",
+    "haricot_legacy": "assets/icons/cultures/haricot.jpg",
+    "mais_legacy": "assets/icons/cultures/mais.jpg",
 }
 
 def get_icon_path(key):
