@@ -1,18 +1,26 @@
 import os
 
 ICONS = {
+    # Agricultural icons
     "recolte": "assets/icons/recolte.jpg",
     "semis": "assets/icons/semis.jpg",
     "entretien": "assets/icons/entretien.jpg",
     "plantation": "assets/icons/plantation.jpg",
-    "pleine_lune": "assets/icons/pleine_lune.jpg",
-    "nouvelle_lune": "assets/icons/pleine_lune.jpg", # Fallback if specific icon missing
-    "premier_quartier": "assets/icons/quartier.jpg",
-    "dernier_quartier": "assets/icons/quartier.jpg",
-    "nouvelle": "assets/icons/pleine_lune.jpg",
-    "premier": "assets/icons/quartier.jpg",
-    "pleine": "assets/icons/pleine_lune.jpg",
-    "dernier": "assets/icons/quartier.jpg",
+    
+    # Lunar phases - new emoji-style icons
+    "nouvelle_lune": "assets/icons/nouvelle_lune.png",
+    "pleine_lune": "assets/icons/pleine_lune_new.png",
+    "premier_quartier": "assets/icons/premiere_quartier.png",
+    "dernier_quartier": "assets/icons/dernier_quartier.png",
+    
+    # Aliases for lunar phases
+    "nouvelle": "assets/icons/nouvelle_lune.png",
+    "pleine": "assets/icons/pleine_lune_new.png",
+    "premier": "assets/icons/premiere_quartier.png",
+    "dernier": "assets/icons/dernier_quartier.png",
+    "premier_croissant": "assets/icons/premier_croissant.png",
+    "dernier_croissant": "assets/icons/dernier_croissant.png",
+    
     # Cultures
     "riz": "assets/icons/cultures/riz.jpg",
     "manioc": "assets/icons/cultures/manioc.jpg",
