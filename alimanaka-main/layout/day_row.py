@@ -104,7 +104,7 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         f = Frame(content_x, y, content_width, height, leftPadding=1, bottomPadding=2, rightPadding=1, topPadding=1, showBoundary=0)
         f.addFromList(story, canvas)
 
-    icon_size = 6
+    icon_size = 8  # Increased from 6 for better visibility
     # Icons aligned right, no overlapping
     if month_data and not month_data["lunes"].empty:
         lune_df = month_data["lunes"]
@@ -113,7 +113,8 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             phase_id = lune_row.iloc[0].get('phase_id', '')
             moon_path = get_moon_icon(str(phase_id).strip().lower())
             if moon_path:
-                canvas.drawImage(moon_path, x + width - 12, y + height - 12, width=icon_size, height=icon_size, mask='auto')
+                # Moon icon positioned in top-right corner with better spacing
+                canvas.drawImage(moon_path, x + width - 14, y + height - 13, width=icon_size, height=icon_size, mask='auto')
 
     if month_data and not month_data["agricole"].empty:
         agri_df = month_data["agricole"]
@@ -122,7 +123,9 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             row = agri_row.iloc[0]
             culture_path = get_culture_icon(row.get('culture_id', ''))
             if culture_path:
-                canvas.drawImage(culture_path, x + width - 12, y + 4, width=icon_size, height=icon_size, mask='auto')
+                # Culture icon positioned in bottom-right area
+                canvas.drawImage(culture_path, x + width - 14, y + 3, width=icon_size, height=icon_size, mask='auto')
             action_path = get_agri_icon(row.get('action_id', ''))
             if action_path:
-                canvas.drawImage(action_path, x + width - 20, y + 4, width=icon_size, height=icon_size, mask='auto')
+                # Action icon positioned next to culture icon
+                canvas.drawImage(action_path, x + width - 23, y + 3, width=icon_size, height=icon_size, mask='auto')

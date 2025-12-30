@@ -95,8 +95,19 @@ def draw_page(c, year, start_month, end_month, page_num):
         draw_month(c, x, margin, col_width - 8, height - header_height_req - 20, year, month, global_data)
 
 def draw_month(c, x, y, width, height, year, month, global_data):
+    from config.colors import COLOR_HEADER
+    
     days = get_days_in_month(year, month)
     month_data = get_month_data(month)
+    
+    # Month Border (subtle frame)
+    c.saveState()
+    c.setStrokeColor(COLOR_HEADER)
+    c.setLineWidth(0.75)
+    c.setFillAlpha(0.02)
+    c.rect(x, y, width, height, fill=0, stroke=1)
+    c.setFillAlpha(1.0)
+    c.restoreState()
     
     # Month Title (Uppercase, Bold, No background)
     c.saveState()
@@ -106,8 +117,8 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     c.drawCentredString(x + width/2, y + height - 10, month_names[month-1].upper())
     
     # Underline for month title
-    c.setStrokeColor(COLOR_TEXT)
-    c.setLineWidth(1)
+    c.setStrokeColor(COLOR_HEADER)
+    c.setLineWidth(1.2)
     c.line(x + 10, y + height - 14, x + width - 10, y + height - 14)
     c.restoreState()
     
