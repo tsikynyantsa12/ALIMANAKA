@@ -1,0 +1,8 @@
+{
+  "pythonVersion": "3.11",
+  "pythonPath": ".",
+  "typeCheckingMode": "basic",
+  "include": ["."],
+  "exclude": ["output", ".cache"],
+  "extraPaths": ["."]
+}
