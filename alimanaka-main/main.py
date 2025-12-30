@@ -18,6 +18,8 @@ def draw_background(c, width, height):
         c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
+    from config.colors import COLOR_HEADER
+    
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
     rose_luther = "assets/images/rose_luther.png"
@@ -28,6 +30,13 @@ def draw_header(c, width, height, page_num, global_data):
     logo_size = header_height * 0.5
     photo_size = header_height * 0.6
     rose_size = header_height * 0.3
+
+    # Subtle header background line for cohesion
+    c.saveState()
+    c.setStrokeColor(COLOR_HEADER)
+    c.setLineWidth(1.5)
+    c.line(15, height - header_height - 5, width - 15, height - header_height - 5)
+    c.restoreState()
 
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 40, height - header_height/2 - logo_size/2, width=logo_size, height=logo_size, mask='auto')
@@ -42,14 +51,19 @@ def draw_header(c, width, height, page_num, global_data):
         c.drawImage(photo_r, width - 40 - logo_size - 20 - photo_size, height - header_height/2 - photo_size/2, width=photo_size, height=photo_size, mask='auto')
 
     if not global_data["entetes"].empty:
-        c.setFillColor(COLOR_TEXT)
+        c.setFillColor(COLOR_HEADER)
         entetes_df = global_data["entetes"].sort_values('ligne')
         curr_y = height - 35
-        for _, row in entetes_df.iterrows():
-            size = SIZE_HEADER_MAIN if row['ligne'] == 1 else SIZE_HEADER_MAIN * 0.7
+        for idx, (_, row) in enumerate(entetes_df.iterrows()):
+            if idx == 0:
+                size = SIZE_HEADER_MAIN
+            elif idx == len(entetes_df) - 1:
+                size = SIZE_HEADER_MAIN * 0.65
+            else:
+                size = SIZE_HEADER_MAIN * 0.7
             c.setFont("Helvetica-Bold", size)
-            c.drawCentredString(width/2, curr_y, str(row['texte']))
-            curr_y -= size + 8
+            c.drawCentredString(width/2, curr_y, str(row['texte']).strip())
+            curr_y -= size + 6
 
 def generate_calendar():
     c = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)

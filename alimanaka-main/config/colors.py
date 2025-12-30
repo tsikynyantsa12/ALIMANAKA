@@ -1,34 +1,41 @@
 from reportlab.lib.colors import HexColor, Color
 
 def get_liturgical_colors(global_data=None):
+    """Load liturgical colors from CSV with fallback defaults"""
     mapping = {}
     if global_data is not None and not global_data["couleurs"].empty:
         for _, row in global_data["couleurs"].iterrows():
-            cid = str(row['id']).lower()
-            hex_code = str(row['code_hex'])
-            c = HexColor(hex_code)
-            mapping[cid] = c # No alpha, just the color for the border
+            cid = str(row['id']).strip().lower()
+            hex_code = str(row['code_hex']).strip()
+            try:
+                mapping[cid] = HexColor(hex_code)
+            except:
+                pass
     
     defaults = {
-        "vert": HexColor("#a8d5ba"),
-        "rouge": HexColor("#f1948a"),
-        "violet": HexColor("#c39bd3"),
-        "blanc": HexColor("#fefefe")
+        "vert": HexColor("#6ba886"),      # Darker green for visibility
+        "rouge": HexColor("#c94c4c"),     # Richer red
+        "violet": HexColor("#9b6ba8"),    # Richer purple
+        "blanc": HexColor("#e8e8e8")      # Off-white for better contrast
     }
+    
     for k, v in defaults.items():
         if k not in mapping:
             mapping[k] = v
     return mapping
 
-# 5 Core colors as requested (Low saturation)
-COLOR_TEXT = HexColor("#1A1A1A") # Near black
-COLOR_TEXT_SECONDARY = HexColor("#444444")
-COLOR_GRID = Color(0, 0, 0, alpha=0.15) # Thin low opacity grid
+# Design System Colors (Cohesive & Accessible)
+COLOR_TEXT = HexColor("#2C2C2C")                # Rich dark gray
+COLOR_TEXT_SECONDARY = HexColor("#666666")     # Medium gray for secondary text
+COLOR_HEADER = HexColor("#1A3A52")             # Deep blue for headers
+COLOR_GRID = Color(0, 0, 0, alpha=0.12)       # Subtle grid lines
+COLOR_BACKGROUND = HexColor("#FAFAFA")        # Very light gray background
 
-COLOR_MESSE = HexColor("#5D7B93") # Muted Blue
-COLOR_REUNION = HexColor("#7BAE7F") # Muted Green
-COLOR_FETE = HexColor("#D4A373") # Muted Orange
-COLOR_DIMANCHE = HexColor("#B56565") # Muted Red
-COLOR_HOLIDAY = HexColor("#990000")
+# Semantic Colors
+COLOR_MESSE = HexColor("#4A6FA5")              # Service blue
+COLOR_REUNION = HexColor("#6BA86F")            # Meeting green
+COLOR_FETE = HexColor("#C89D4A")               # Celebration gold
+COLOR_DIMANCHE = HexColor("#C44E52")           # Sunday red
+COLOR_HOLIDAY = HexColor("#8B0000")            # Holiday dark red
 
 LITURGICAL_COLORS = get_liturgical_colors()
