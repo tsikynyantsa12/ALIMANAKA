@@ -41,19 +41,19 @@ def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête avec les logos et les titres."""
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
-    # Augmentation de 50% de la hauteur (0.28 * 1.5 = 0.42)
-    header_height = height * 0.42
-    logo_size = header_height * 0.3
+    # Augmentation de 15% par rapport à l'original (0.20 * 1.15 = 0.23)
+    header_height = height * 0.23
+    logo_size = header_height * 0.45
     
     c.saveState()
     c.setFillColor(COLORS['blue_royal'])
-    # On remplit le rectangle bleu pour couvrir la nouvelle hauteur
+    # On remplit le rectangle bleu pour couvrir la hauteur
     c.rect(0, height - header_height, width, header_height, fill=1, stroke=0)
     c.restoreState()
     
     draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
     
-    center_y = height - header_height / 2 + 15
+    center_y = height - header_height / 2 + 10
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 40, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
     if os.path.exists(logo_agri):
@@ -61,8 +61,8 @@ def draw_header(c, width, height, page_num, global_data):
     
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        # On ajuste curr_y pour centrer le texte dans la nouvelle hauteur
-        curr_y = height - 40
+        # On ajuste curr_y pour centrer le texte
+        curr_y = height - 25
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             text_content = str(row['texte']).strip()
             if idx == 0:
@@ -75,7 +75,7 @@ def draw_header(c, width, height, page_num, global_data):
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 12
+            curr_y -= size + 8
 
 def draw_technical_legend(c, x, y, width, height):
     """Dessine une légende technique stylisée avec icônes."""
@@ -158,7 +158,7 @@ def draw_page(c, year, start_month, end_month, page_num):
     # Marges standards pour l'impression (env. 1cm = 28.3 pts)
     margin_x = 30
     margin_y = 30
-    header_h = height * 0.42
+    header_h = height * 0.23
     
     photo_col_width = (width - 2 * margin_x) * 0.18
     months_area_width = width - photo_col_width - 2 * margin_x
