@@ -221,7 +221,7 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             act_x += step_x
             act_count += 1
 
-    # Couleurs (colonne droite - bas) - 2 colonnes compactes
+    # Couleurs liturgiques (colonne droite - bas) - Mise en page propre
     if not global_data["couleurs"].empty:
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
@@ -230,18 +230,20 @@ def draw_technical_legend(c, x, y, width, height, global_data):
         
         color_y = bottom_y - 7
         color_x1 = col2_x
-        color_x2 = col2_x + width/4
+        color_x2 = col2_x + (col_width / 2)
         color_count = 0
         
         for _, row in global_data["couleurs"].iterrows():
             color_name = str(row['couleur']).strip()
             hex_code = str(row['code_hex']).strip()
+            signification = str(row.get('signification', '')).strip()
+            
             try:
                 color_obj = HexColor(hex_code)
             except:
                 color_obj = HexColor("#a8d5ba")
             
-            # Déterminer position (2 colonnes)
+            # Disposition : 2 colonnes
             if color_count == 2:
                 color_y = bottom_y - 7
                 color_x1 = color_x2
@@ -252,12 +254,15 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             c.setFillColor(color_obj)
             c.setLineWidth(0.4)
             c.setStrokeColor(HexColor('#333333'))
-            c.rect(current_x, color_y - 5, 7, 7, fill=1, stroke=1)
+            c.rect(current_x, color_y - 5, 6, 6, fill=1, stroke=1)
             
-            # Nom couleur
+            # Nom couleur + signification compacte
             c.setFillColor(COLORS['black'])
-            c.setFont("Helvetica", 5)
-            c.drawString(current_x + 9, color_y - 2, color_name[:8])
+            c.setFont("Helvetica-Bold", 4.5)
+            c.drawString(current_x + 8, color_y - 1, color_name)
+            c.setFont("Helvetica", 4)
+            c.drawString(current_x + 8, color_y - 4, signification[:14])
+            
             color_y -= 7
             color_count += 1
             
