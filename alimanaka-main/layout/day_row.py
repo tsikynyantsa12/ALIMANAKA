@@ -13,8 +13,8 @@ style_program = ParagraphStyle('Program', parent=styles['Normal'], fontSize=SIZE
 style_verse = ParagraphStyle('Verse', parent=styles['Normal'], fontSize=SIZE_VERSE-1, leading=SIZE_VERSE+2, alignment=TA_LEFT, textColor=COLOR_TEXT_SECONDARY, fontName=FONT_ITALIC)
 
 def calculate_day_height(day_info, month_data):
-    """Calcule la hauteur nécessaire pour une ligne de jour en fonction du contenu."""
-    base_height = 18 # Hauteur de base réduite pour plus de compacité
+    """Calcule la hauteur nécessaire pour une ligne de jour (augmentée pour lisibilité)."""
+    base_height = 20 # Augmenté de 18 à 20 pour utiliser l'espace gagné
     date_str = day_info["date"].isoformat()
     extra_height = 0
     if month_data and not month_data["dimanches"].empty:

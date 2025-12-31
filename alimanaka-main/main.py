@@ -46,47 +46,40 @@ def draw_wave_decoration(c, width, height, color, position='top'):
     c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
-    """Dessine l'en-tête modernisé en 3 colonnes avec données réelles."""
+    """Dessine l'en-tête ultra-compact en 3 colonnes."""
     logo_eglise = "assets/images/logo_eglise.png"
-    header_height = height * 0.12  # Réduction de la hauteur du header
+    # Réduction à 9% de la hauteur de page pour un en-tête très "fit"
+    header_height = height * 0.09
     
     c.saveState()
-    # Ligne de séparation sous l'en-tête (remontée)
+    # Ligne de séparation sous l'en-tête
     c.setStrokeColor(HexColor('#1A237E'))
-    c.setLineWidth(1)
+    c.setLineWidth(0.8)
     c.line(0, height - header_height, width, height - header_height)
     
-    # 1. Colonne Gauche : Logo
-    logo_size = header_height * 0.8
+    # 1. Colonne Gauche : Logo réduit
+    logo_size = header_height * 0.85
     if os.path.exists(logo_eglise):
-        c.drawImage(logo_eglise, 30, height - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
+        c.drawImage(logo_eglise, 25, height - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
     
-    # 2. Colonne Centrale : Textes du CSV entetes.csv
+    # 2. Colonne Centrale : Textes CSV
     c.setFillColor(HexColor('#1A237E'))
     if not global_data["entetes"].empty:
-        # On prend la première ligne pour les infos principales
         data = global_data["entetes"].iloc[0]
+        c.setFont("Helvetica-Bold", 16)
+        c.drawCentredString(width/2, height - header_height * 0.45, str(data.get('texte', 'FIANGONANA LOTERANA MALAGASY')))
         
-        # Ligne 1 : Nom de l'église (Gras, Grand)
-        c.setFont("Helvetica-Bold", 18)
-        c.drawCentredString(width/2, height - header_height * 0.4, str(data.get('texte', 'FIANGONANA LOTERANA MALAGASY')))
-        
-        # Ligne 2 : Détails (Synode, etc.)
-        c.setFont("Helvetica", 11)
-        # On cherche si d'autres lignes existent pour le sous-titre
-        subtitle = ""
         if len(global_data["entetes"]) > 1:
             subtitle = str(global_data["entetes"].iloc[1].get('texte', ''))
-        c.drawCentredString(width/2, height - header_height * 0.7, subtitle)
-    else:
-        c.setFont("Helvetica-Bold", 18)
-        c.drawCentredString(width/2, height - header_height * 0.5, "FIANGONANA LOTERANA MALAGASY")
-            
-    # 3. Colonne Droite : Année (Dynamique si possible)
-    c.setFont("Helvetica-Bold", 22)
-    c.drawCentredString(width - 60, height - header_height * 0.55, "2026")
+            c.setFont("Helvetica", 9)
+            c.drawCentredString(width/2, height - header_height * 0.75, subtitle)
+    
+    # 3. Colonne Droite : Année
+    c.setFont("Helvetica-Bold", 20)
+    c.drawCentredString(width - 50, height - header_height * 0.55, "2026")
     
     c.restoreState()
+    return header_height
 
 def draw_technical_legend(c, x, y, width, height, global_data):
     """Dessine une légende technique optimisée sur deux colonnes."""
@@ -209,16 +202,16 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
         # Il est préférable de passer le scale_factor aux fonctions de dessin ou d'ajuster les polices.
         pass
 
-    draw_header(c, width, height, page_num, global_data)
+    header_h = draw_header(c, width, height, page_num, global_data)
     draw_wave_decoration(c, width, height, COLORS['gold'], 'bottom')
 
-    # Zone utile sous le header
-    content_h = height - header_h - 2 * margin_y
-    photo_h = content_h * 0.40
+    # Zone utile optimisée : le calendrier commence 8 points sous le header
+    content_h = height - header_h - margin_y - 10 * scale_factor
+    photo_h = content_h * 0.42
     legend_h = content_h * 0.18
     
-    # Remonter les composants (start_y augmenté pour remonter le tout)
-    start_y = height - header_h - margin_y + 35 * scale_factor
+    # Point d'ancrage remonté : seulement 8 pts sous la ligne du header
+    start_y = height - header_h - 8 * scale_factor
     
     # Marges entre mois augmentées
     month_margin = 12 * scale_factor
@@ -239,7 +232,8 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
 
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin_x + photo_col_width + i * month_col_width
-        draw_month(c, x, margin_y + 5 * scale_factor, month_col_width - 6 * scale_factor, height - header_h - margin_y - 15 * scale_factor, year, month, global_data)
+        # Hauteur des mois maximisée avec l'espace gagné
+        draw_month(c, x, margin_y + 5 * scale_factor, month_col_width - 6 * scale_factor, height - header_h - margin_y - 12 * scale_factor, year, month, global_data)
 
     # Signature Designer
     c.saveState()
