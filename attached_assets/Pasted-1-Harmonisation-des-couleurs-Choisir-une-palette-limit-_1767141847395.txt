@@ -1,0 +1,82 @@
+1. Harmonisation des couleurs
+Choisir une palette limitée (ex. : bleu foncé, blanc, doré ou orange vif) qui contraste bien avec le fond.
+
+Appliquer la même couleur aux titres principaux et sous-titres pour une cohérence visuelle.
+
+2. Amélioration de la lisibilité des textes
+Ombre portée sur les textes pour les détacher du fond.
+
+Contour (stroke) fin et clair autour des lettres.
+
+Arrière-plan semi-transparent uniquement derrière les zones de texte (rectangle avec opacité à 20-30%).
+
+3. Hiérarchie visuelle
+Titre principal (Fiangonana Loterana Malagasy) : taille augmentée, gras, couleur vive (blanc ou doré).
+
+Sous-titres (Synode-Puritany...) : taille légèrement plus petite, couleur légèrement atténuée.
+
+Dates / Lieux (ALIMANAKA 2025) : en haut ou bas de page, encadré discret.
+
+4. Positionnement et espacement
+Alignement centré ou structuré en colonnes si plusieurs blocs.
+
+Espacement généreux entre les lignes et les sections.
+
+5. Exemple de palette suggérée
+Texte principal : #FFFFFF (blanc) avec ombre noire légère.
+
+Accents : #F4C430 (doré) pour les mots clés (Batalo, Mahatoarivo).
+
+Fond de zone texte : rgba(0, 0, 50, 0.2) (bleu nuit très transparent).
+
+6. Code Python (avec reportlab) – extrait adaptatif
+python
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.colors import Color, white, black
+
+# Couleurs personnalisées
+bleu_fonce = Color(0, 0, 50, alpha=1)
+doré = Color(0.96, 0.77, 0.19, alpha=1)
+fond_texte = Color(0, 0, 50, alpha=0.2)
+
+# Création du PDF
+c = canvas.Canvas("output.pdf", pagesize=A4)
+width, height = A4
+
+# Image de fond (si applicable)
+# c.drawImage("background.jpg", 0, 0, width, height)
+
+# Rectangle semi-transparent pour zone de texte
+c.setFillColor(fond_texte)
+c.rect(50, 150, width - 100, height - 300, fill=1)
+
+# Titre principal
+c.setFont("Helvetica-Bold", 28)
+c.setFillColor(white)
+c.setStrokeColor(black)
+c.setLineWidth(0.5)
+# Ombre portée simulée
+c.drawString(52, height - 152, "Fiangonana Loterana Malagasy")
+c.setFillColor(doré)
+c.drawString(50, height - 150, "Fiangonana Loterana Malagasy")
+
+# Sous-titre
+c.setFont("Helvetica", 16)
+c.setFillColor(white)
+c.drawCentredString(width / 2, height - 220, "Synode-Puritany Avatra Mania")
+c.drawCentredString(width / 2, height - 250, "Filipovana Batalo - Filantoromana Mahatoarivo")
+c.drawCentredString(width / 2, height - 280, "Fiangonana Mahatoarivo")
+
+# Année en bas
+c.setFont("Helvetica-Bold", 20)
+c.drawCentredString(width / 2, 100, "ALIMANAKA 2025")
+
+c.save()
+7. Recommandations finales
+Tester l’impression pour vérifier les contrastes.
+
+Garder l’image de fond visible mais estompée (réduction de luminosité ou flou légal si nécessaire).
+
+Utiliser des polices sans empattement (Helvetica, Arial) pour une meilleure lecture.
+

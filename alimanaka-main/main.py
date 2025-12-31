@@ -7,7 +7,7 @@ from layout.day_row import draw_day_row, calculate_day_height
 from utils.date_utils import get_days_in_month, get_weekday_fr
 from utils.csv_loader import get_month_data, get_global_data
 from config.fonts import SIZE_HEADER_MAIN
-from config.colors import COLOR_TEXT, COLOR_GRID
+from config.colors import COLOR_TEXT, COLOR_GRID, COLOR_DARK_BLUE, COLOR_HEADER_BG, COLOR_HEADER_ACCENT
 
 def draw_background(c, width, height):
     bg_path = "assets/images/background_betafo.jpg"
@@ -70,20 +70,52 @@ def draw_header(c, width, height, page_num, global_data):
     if os.path.exists(logo_agri):
         c.drawImage(logo_agri, width - 30 - logo_size, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
 
-    # Header text (title + subtitles) - compact spacing
+    # Header text (title + subtitles) with enhanced typography per design spec
     if not global_data["entetes"].empty:
-        c.setFillColor(COLOR_HEADER)
+        from config.colors import COLOR_HEADER_ACCENT, COLOR_HEADER_BG
+        
         entetes_df = global_data["entetes"].sort_values('ligne')
         curr_y = height - 28  # Reduced from 35 (saves 7pt)
+        
+        # Background rectangle for text area (semi-transparent)
+        text_area_height = (len(entetes_df) * SIZE_HEADER_MAIN * 0.7) + 20
+        text_area_y = curr_y - text_area_height
+        c.setFillColor(COLOR_HEADER_BG)
+        c.rect(50, text_area_y, width - 100, text_area_height, fill=1, stroke=0)
+        
+        curr_y = height - 28
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
+            text_content = str(row['texte']).strip()
+            
             if idx == 0:
+                # Main title: larger, white, with shadow effect
                 size = SIZE_HEADER_MAIN
+                c.setFont("Helvetica-Bold", size)
+                
+                # Shadow effect (dark blue, offset)
+                c.setFillColor(COLOR_DARK_BLUE)
+                c.setFillAlpha(0.4)
+                c.drawCentredString(width/2 + 1, curr_y - 1, text_content)
+                
+                # Main text (white)
+                c.setFillColor(COLOR_HEADER)
+                c.setFillAlpha(1.0)
+                c.drawCentredString(width/2, curr_y, text_content)
+                
             elif idx == len(entetes_df) - 1:
+                # Last subtitle: gold accent
                 size = SIZE_HEADER_MAIN * 0.65
+                c.setFont("Helvetica-Bold", size)
+                c.setFillColor(COLOR_HEADER_ACCENT)
+                c.drawCentredString(width/2, curr_y, text_content)
+                
             else:
+                # Middle subtitles: white
                 size = SIZE_HEADER_MAIN * 0.7
-            c.setFont("Helvetica-Bold", size)
-            c.drawCentredString(width/2, curr_y, str(row['texte']).strip())
+                c.setFont("Helvetica-Bold", size)
+                c.setFillColor(COLOR_HEADER)
+                c.drawCentredString(width/2, curr_y, text_content)
+            
             curr_y -= size + 4  # Reduced from 6 (tighter spacing)
 
 def generate_calendar():
