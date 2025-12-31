@@ -59,12 +59,12 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     canvas.restoreState()
     
     # MISE EN PAGE : GAUCHE (Date) | CENTRE (Texte) | DROITE (Icônes)
-    icon_size = 7
-    icon_spacing = 1
+    icon_size = 8 # Augmenté
+    icon_spacing = 2
     
     # Largeurs des colonnes
-    left_col_w = 18
-    right_col_w = 25
+    left_col_w = 20
+    right_col_w = 30
     center_width = width - left_col_w - right_col_w
     
     # COLONNE GAUCHE (Date)
@@ -147,11 +147,12 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
                 event_y -= h
     
     # COLONNE DE DROITE (Icônes agricoles et Lune)
+    icon_y_center = y + (height - icon_size) / 2
+    
     if moon_path:
-        moon_x = x + width - 25
-        moon_y = y + height - 7
+        moon_x = x + width - 12
         try:
-            canvas.drawImage(moon_path, moon_x, moon_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+            canvas.drawImage(moon_path, moon_x, icon_y_center, width=icon_size, height=icon_size, mask='auto')
         except: pass
     
     if month_data and not month_data["agricole"].empty:
@@ -159,18 +160,22 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         agri_row = agri_df[agri_df['date'] == date_str]
         if not agri_row.empty:
             row = agri_row.iloc[0]
-            culture_path = get_culture_icon(row.get('culture_id', ''))
-            action_path = get_agri_icon(row.get('action_id', ''))
-            agri_icon_x = x + width - icon_size - 1
-            agri_icon_y = y + height - 7
+            culture_id = str(row.get('culture_id', '')).strip().lower()
+            action_id = str(row.get('action_id', '')).strip().lower()
+            
+            culture_path = get_culture_icon(culture_id)
+            action_path = get_agri_icon(action_id)
+            
+            # Positionnement à gauche de la lune
+            agri_icon_x = x + width - 24
             
             if action_path:
                 try:
-                    canvas.drawImage(action_path, agri_icon_x, agri_icon_y - icon_size, width=icon_size, height=icon_size, mask='auto')
-                    agri_icon_x -= icon_size + icon_spacing
+                    canvas.drawImage(action_path, agri_icon_x, icon_y_center, width=icon_size, height=icon_size, mask='auto')
+                    agri_icon_x -= (icon_size + icon_spacing)
                 except: pass
             
             if culture_path:
                 try:
-                    canvas.drawImage(culture_path, agri_icon_x, agri_icon_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+                    canvas.drawImage(culture_path, agri_icon_x, icon_y_center, width=icon_size, height=icon_size, mask='auto')
                 except: pass

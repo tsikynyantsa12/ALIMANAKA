@@ -41,9 +41,10 @@ def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête avec les logos et les titres."""
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
-    header_height = height * 0.20
+    header_height = height * 0.24 # Augmenté pour bien couvrir tout le texte
     logo_size = header_height * 0.45
     draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
+    
     center_y = height - header_height / 2
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 40, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
@@ -51,7 +52,7 @@ def draw_header(c, width, height, page_num, global_data):
         c.drawImage(logo_agri, width - 40 - logo_size, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        curr_y = height - 30
+        curr_y = height - 20 # Remonté un peu pour être bien dans le bleu
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             text_content = str(row['texte']).strip()
             if idx == 0:
@@ -64,10 +65,11 @@ def draw_header(c, width, height, page_num, global_data):
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 6
+            curr_y -= size + 8 # Espacement augmenté
 
 def draw_technical_legend(c, x, y, width, height):
-    """Dessine une légende technique stylisée."""
+    """Dessine une légende technique stylisée avec icônes."""
+    from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
     c.setStrokeColor(COLOR_GRID)
     c.setLineWidth(0.8)
@@ -77,18 +79,42 @@ def draw_technical_legend(c, x, y, width, height):
     c.setFillColor(COLORS['white'])
     c.setFont("Helvetica-Bold", 8)
     c.drawCentredString(x + width/2, y + height - 10, "LÉGENDE")
+    
     curr_y = y + height - 30
     c.setFont("Helvetica", 7)
     c.setFillColor(COLORS['black'])
-    legends = [
-        "●  Phase Lunaire",
-        "🌱  Culture / Travail",
-        "🚜  Action Agricole",
-        "■  Couleur Liturgique"
+    
+    # On dessine les icônes à côté du texte
+    items = [
+        ("pleine", "Phase Lunaire"),
+        ("riz", "Culture / Travail"),
+        ("semis", "Action Agricole"),
     ]
-    for text in legends:
-        c.drawString(x + 10, curr_y, text)
+    
+    icon_size = 10
+    for icon_id, label in items:
+        icon_path = None
+        if label == "Phase Lunaire":
+            icon_path = get_moon_icon(icon_id)
+        elif label == "Culture / Travail":
+            icon_path = get_culture_icon(icon_id)
+        else:
+            icon_path = get_agri_icon(icon_id)
+            
+        if icon_path and os.path.exists(icon_path):
+            try:
+                c.drawImage(icon_path, x + 8, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
+            except: pass
+        
+        c.drawString(x + 22, curr_y + 1, label)
         curr_y -= 15
+        
+    # Cas particulier pour la couleur liturgique (carré de couleur)
+    c.setFillColor(COLORS['red_carmin'])
+    c.rect(x + 8, curr_y - 2, 10, 10, fill=1, stroke=1)
+    c.setFillColor(COLORS['black'])
+    c.drawString(x + 22, curr_y + 1, "Couleur Liturgique")
+    
     c.restoreState()
 
 def draw_month(c, x, y, width, height, year, month, global_data):
