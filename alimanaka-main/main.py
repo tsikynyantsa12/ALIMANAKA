@@ -80,8 +80,8 @@ def draw_header(c, width, height, page_num, global_data):
     
     c.restoreState()
 
-def draw_technical_legend(c, x, y, width, height):
-    """Dessine une légende technique stylisée avec icônes."""
+def draw_technical_legend(c, x, y, width, height, global_data):
+    """Dessine une légende technique stylisée avec icônes réelles."""
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
     # Couleur de fond jaune doux
@@ -98,39 +98,62 @@ def draw_technical_legend(c, x, y, width, height):
     c.setFont("Helvetica-Bold", 8)
     c.drawCentredString(x + width/2, y + height - 10, "LÉGENDE")
     
-    curr_y = y + height - 30
-    c.setFont("Helvetica", 7)
+    curr_y = y + height - 25
+    c.setFont("Helvetica", 6)
     c.setFillColor(COLORS['black'])
     
-    items = [
-        ("pleine", "Phase Lunaire"),
-        ("riz", "Culture / Travail"),
-        ("semis", "Action Agricole"),
-    ]
+    icon_size = 8
     
-    icon_size = 10
-    for icon_id, label in items:
-        icon_path = None
-        if label == "Phase Lunaire":
+    # Phases lunaires réelles
+    if not global_data["phases"].empty:
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString(x + 5, curr_y, "Lunes:")
+        curr_y -= 8
+        for _, row in global_data["phases"].head(4).iterrows():
+            icon_id = str(row['id']).strip().lower()
+            label = str(row['phase']).strip()
             icon_path = get_moon_icon(icon_id)
-        elif label == "Culture / Travail":
+            if icon_path and os.path.exists(icon_path):
+                try:
+                    c.drawImage(icon_path, x + 5, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
+                except: pass
+            c.drawString(x + 15, curr_y, label)
+            curr_y -= 10
+
+    # Cultures réelles
+    if not global_data["cultures"].empty:
+        curr_y -= 5
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString(x + 5, curr_y, "Cultures:")
+        curr_y -= 8
+        for _, row in global_data["cultures"].head(4).iterrows():
+            icon_id = str(row['id']).strip().lower()
+            label = str(row['culture']).strip()
             icon_path = get_culture_icon(icon_id)
-        else:
-            icon_path = get_agri_icon(icon_id)
+            if icon_path and os.path.exists(icon_path):
+                try:
+                    c.drawImage(icon_path, x + 5, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
+                except: pass
+            c.drawString(x + 15, curr_y, label)
+            curr_y -= 10
             
-        if icon_path and os.path.exists(icon_path):
-            try:
-                c.drawImage(icon_path, x + 8, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
-            except: pass
-        
-        c.drawString(x + 22, curr_y + 1, label)
-        curr_y -= 15
-        
-    c.setFillColor(COLORS['red_carmin'])
-    c.rect(x + 8, curr_y - 2, 10, 10, fill=1, stroke=1)
-    c.setFillColor(COLORS['black'])
-    c.drawString(x + 22, curr_y + 1, "Couleur Liturgique")
-    
+    # Actions réelles
+    if not global_data["actions"].empty:
+        curr_y -= 5
+        c.setFont("Helvetica-Bold", 6)
+        c.drawString(x + 5, curr_y, "Actions:")
+        curr_y -= 8
+        for _, row in global_data["actions"].head(4).iterrows():
+            icon_id = str(row['id']).strip().lower()
+            label = str(row['action']).strip()
+            icon_path = get_agri_icon(icon_id)
+            if icon_path and os.path.exists(icon_path):
+                try:
+                    c.drawImage(icon_path, x + 5, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
+                except: pass
+            c.drawString(x + 15, curr_y, label)
+            curr_y -= 10
+            
     c.restoreState()
 
 def draw_month(c, x, y, width, height, year, month, global_data):
@@ -197,7 +220,8 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     photo_h = content_h * 0.40
     legend_h = content_h * 0.18
     
-    start_y = height - header_h - margin_y
+    # Remonter les composants (start_y augmenté pour remonter le tout)
+    start_y = height - header_h - margin_y + 20 * scale_factor
     
     # Marges entre mois augmentées
     month_margin = 10 * scale_factor
@@ -214,7 +238,7 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
             c.restoreState()
     
     legend_y = margin_y + 5 * scale_factor
-    draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5 * scale_factor, legend_h)
+    draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5 * scale_factor, legend_h, global_data)
 
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin_x + photo_col_width + i * month_col_width
