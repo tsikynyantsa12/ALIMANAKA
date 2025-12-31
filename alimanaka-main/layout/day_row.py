@@ -62,6 +62,11 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     icon_size = 7
     icon_spacing = 1
     
+    # Largeurs des colonnes
+    left_col_w = 18
+    right_col_w = 25
+    center_width = width - left_col_w - right_col_w
+    
     # COLONNE GAUCHE (Date)
     left_x = x + 2
     left_y = y + height - 7
@@ -98,19 +103,20 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             phase_id = lune_row.iloc[0].get('phase_id', '')
             moon_path = get_moon_icon(str(phase_id).strip().lower())
     
+    # COLONNE CENTRALE (Texte)
+    center_x = x + left_col_w
+    event_y = y + height - 9
+    
     # Text Content (liturgical events, readings, programs)
     # 3a. Liturgical event name
     if specific_data is not None:
         name = specific_data.get('nom_dimanche', '')
         if pd.notna(name) and name:
             event_text = str(name)
-            canvas.setFillColor(COLOR_HEADER)
-            canvas.setFont(FONT_BOLD, SIZE_PROGRAM - 0.5)
-            # Use Paragraph to avoid clipping
             p = Paragraph(event_text, style_program)
-            p.wrapOn(canvas, center_width, line_height)
-            p.drawOn(canvas, center_x, event_y - 2)
-            event_y -= line_height
+            w, h = p.wrap(center_width, 100)
+            p.drawOn(canvas, center_x, event_y - h)
+            event_y -= h
         
         # 3b. Readings (smaller, secondary)
         readings = []
@@ -121,14 +127,9 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         
         if readings:
             verse = " | ".join(readings)
-            canvas.setFillColor(COLOR_TEXT_SECONDARY)
-            canvas.setFont(FONT_ITALIC, SIZE_VERSE - 0.5)
-            # Use Paragraph for multiline/wrapping
             p = Paragraph(f"« {verse} »", style_verse)
-            p.wrapOn(canvas, center_width, line_height * 2)
-            p.drawOn(canvas, center_x, event_y - 4)
-            # Estimate height used (crude)
-            _, h = p.wrap(center_width, line_height * 2)
+            w, h = p.wrap(center_width, 100)
+            p.drawOn(canvas, center_x, event_y - h)
             event_y -= h
     
     # 3c. Church programs
@@ -136,19 +137,14 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         prog_df = month_data["eglise"]
         prog_row = prog_df[prog_df['date'] == date_str]
         if not prog_row.empty:
-            p = prog_row.iloc[0]
-            text = f"{p.get('programme1', '')} {p.get('programme2', '')}".strip()
+            p_data = prog_row.iloc[0]
+            text = f"{p_data.get('programme1', '')} {p_data.get('programme2', '')}".strip()
             if text:
-                canvas.setFillColor(COLOR_TEXT_SECONDARY)
-                canvas.setFont(FONT_REGULAR, SIZE_PROGRAM - 1.5)
-                # Use Paragraph
-                p = Paragraph(text, style_program) # Using style_program but smaller font is defined in drawString usually
-                # Need a specific style for programs if we want it small
                 p_style = ParagraphStyle('ProgSmall', parent=style_program, fontSize=SIZE_PROGRAM-1.5, leading=SIZE_PROGRAM)
                 p = Paragraph(text, p_style)
-                p.wrapOn(canvas, center_width, line_height * 2)
-                p.drawOn(canvas, center_x, event_y - 2)
-                event_y -= line_height
+                w, h = p.wrap(center_width, 100)
+                p.drawOn(canvas, center_x, event_y - h)
+                event_y -= h
     
     # COLONNE DE DROITE (Icônes agricoles et Lune)
     if moon_path:
