@@ -85,7 +85,7 @@ def draw_header(c, width, height, page_num, global_data):
     return header_height
 
 def draw_technical_legend(c, x, y, width, height, global_data):
-    """Dessine une légende unique avec Lunes, Cultures, Actions et Couleurs."""
+    """Dessine une légende avec 4 sections: Lunes, Cultures, Actions, Couleurs."""
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
     c.setFillColor(HexColor('#FFF9C4'))
@@ -103,72 +103,84 @@ def draw_technical_legend(c, x, y, width, height, global_data):
     c.drawCentredString(x + width/2, y + height - header_rect_h + 3, "LÉGENDE")
     
     icon_size = 7
-    curr_y = y + height - 22
+    col_width = width / 2 - 8
     col1_x = x + 5
     col2_x = x + width/2 + 2
     
-    # SECTION 1: Lunes et Cultures en haut
+    # ===== HAUT: Lunes et Cultures =====
+    top_y = y + height - 22
+    
+    # Lunes (colonne gauche - haut)
     if not global_data["phases"].empty:
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
-        c.drawString(col1_x, curr_y, "• Lunes")
+        c.drawString(col1_x, top_y, "• Lunes")
         c.setFillColor(COLORS['black'])
-        temp_y = curr_y - 10
+        temp_y = top_y - 8
         for _, row in global_data["phases"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['phase']).strip()
             icon_path = get_moon_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, col1_x, temp_y - 2, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, col1_x, temp_y - 4, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 5.5)
-            c.drawString(col1_x + 10, temp_y, label[:15])
-            temp_y -= 9
+            c.setFont("Helvetica", 5)
+            c.drawString(col1_x + 10, temp_y - 1, label[:12])
+            temp_y -= 8
 
+    # Cultures (colonne droite - haut)
     if not global_data["cultures"].empty:
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
-        c.drawString(col2_x, curr_y, "• Cultures")
+        c.drawString(col2_x, top_y, "• Cultures")
         c.setFillColor(COLORS['black'])
-        temp_y = curr_y - 10
+        temp_y = top_y - 8
         for _, row in global_data["cultures"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['culture']).strip()
             icon_path = get_culture_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, col2_x, temp_y - 2, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, col2_x, temp_y - 4, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 5.5)
-            c.drawString(col2_x + 10, temp_y, label[:15])
-            temp_y -= 9
+            c.setFont("Helvetica", 5)
+            c.drawString(col2_x + 10, temp_y - 1, label[:12])
+            temp_y -= 8
 
-    # SECTION 2: Actions en bas (largeur complète)
+    # ===== BAS: Actions et Couleurs =====
+    bottom_y = y + 18
+    
+    # Actions (colonne gauche - bas)
     if not global_data["actions"].empty:
-        temp_y = y + 16
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
-        c.drawString(col1_x, temp_y, "• Actions")
+        c.drawString(col1_x, bottom_y, "• Actions")
         c.setFillColor(COLORS['black'])
-        curr_act_x = col1_x
-        step_x = (width - 10) / 4
+        temp_x = col1_x
+        step_x = col_width / 2
+        act_count = 0
         for _, row in global_data["actions"].head(4).iterrows():
+            if act_count == 2:
+                temp_x = col1_x
+                bottom_y -= 8
             icon_id = str(row['id']).strip().lower()
             label = str(row['action']).strip()
             icon_path = get_agri_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, curr_act_x, temp_y - 8, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, temp_x, bottom_y - 10, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 5)
-            c.drawString(curr_act_x + 9, temp_y - 6, label[:10])
-            curr_act_x += step_x
-    
-    # SECTION 3: Couleurs liturgiques en bas à droite
+            c.setFont("Helvetica", 4.5)
+            c.drawString(temp_x + 9, bottom_y - 8, label[:8])
+            temp_x += step_x
+            act_count += 1
+
+    # Couleurs (colonne droite - bas)
     if not global_data["couleurs"].empty:
-        temp_y = y + 16
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
-        c.drawString(col2_x, temp_y, "• Couleurs")
+        c.drawString(col2_x, bottom_y, "• Couleurs")
         c.setFillColor(COLORS['black'])
+        
+        color_y = bottom_y - 8
         color_x = col2_x
         for _, row in global_data["couleurs"].iterrows():
             color_name = str(row['couleur']).strip()
@@ -178,15 +190,17 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             except:
                 color_obj = HexColor("#a8d5ba")
             
+            # Carré de couleur
             c.setFillColor(color_obj)
-            c.setLineWidth(0.3)
+            c.setLineWidth(0.5)
             c.setStrokeColor(HexColor('#333333'))
-            c.rect(color_x, temp_y - 8, 6, 6, fill=1, stroke=1)
+            c.rect(color_x, color_y - 6, 8, 8, fill=1, stroke=1)
             
+            # Nom couleur
             c.setFillColor(COLORS['black'])
-            c.setFont("Helvetica", 5)
-            c.drawString(color_x + 8, temp_y - 6, color_name[:8])
-            color_x += 25
+            c.setFont("Helvetica", 4.5)
+            c.drawString(color_x + 10, color_y - 3, color_name[:10])
+            color_y -= 8
             
     c.restoreState()
 
