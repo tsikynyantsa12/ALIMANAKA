@@ -67,14 +67,14 @@ def draw_header(c, width, height, page_num, global_data):
     if not global_data["entetes"].empty:
         # On affiche toutes les lignes de texte disponibles dans le CSV pour le centre
         curr_y = height - 10
-        for _, row in global_data["entetes"].iterrows():
+        for i, row in global_data["entetes"].iterrows():
             text = str(row.get('texte', '')).strip()
             if text:
                 # La première ligne (ALIMANAKA ou Nom Eglise) est plus grosse
-                if _ == len(global_data["entetes"]) - 1: # Si c'est la dernière ligne (ALIMANAKA 2026)
-                    c.setFont("Helvetica-Bold", 14)
-                elif _ == 0: # Si c'est la première ligne (Fiangonana Loterana Malagasy)
+                if i == 0: # Fiangonana Loterana Malagasy
                     c.setFont("Helvetica-Bold", 12)
+                elif i == 1: # Synoda-Paritany Avatra Mania
+                    c.setFont("Helvetica-Bold", 10)
                 else:
                     c.setFont("Helvetica", 8)
                 c.drawCentredString(width/2, curr_y, text)
@@ -148,6 +148,26 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             c.setFont("Helvetica", 5.5)
             c.drawString(col2_x + 10, temp_y, label[:15])
             temp_y -= 9
+
+    # Ajout des Actions Agricoles dans la légende
+    if not global_data["actions"].empty:
+        # On remonte un peu pour caler les actions
+        temp_y = y + 5
+        c.setFont("Helvetica-Bold", 6)
+        c.setFillColor(HexColor('#1A237E'))
+        c.drawString(col1_x, temp_y + 10, "• Actions")
+        c.setFillColor(COLORS['black'])
+        curr_act_x = col1_x
+        for _, row in global_data["actions"].head(4).iterrows():
+            icon_id = str(row['id']).strip().lower()
+            label = str(row['action']).strip()
+            icon_path = get_agri_icon(icon_id)
+            if icon_path and os.path.exists(icon_path):
+                try: c.drawImage(icon_path, curr_act_x, temp_y, width=icon_size, height=icon_size, mask='auto')
+                except: pass
+            c.setFont("Helvetica", 5)
+            c.drawString(curr_act_x + 9, temp_y + 2, label[:10])
+            curr_act_x += (width/4)
             
     c.restoreState()
 
