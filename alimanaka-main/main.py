@@ -41,18 +41,27 @@ def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête avec les logos et les titres."""
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
-    header_height = height * 0.24 # Augmenté pour bien couvrir tout le texte
-    logo_size = header_height * 0.45
+    header_height = height * 0.28 # Augmenté significativement pour éviter que la vague ne coupe le texte
+    logo_size = header_height * 0.4
+    
+    # On remplit d'abord tout le rectangle du haut avec du bleu pour assurer un fond plein derrière le texte
+    c.saveState()
+    c.setFillColor(COLORS['blue_royal'])
+    c.rect(0, height - header_height + 30, width, header_height, fill=1, stroke=0)
+    c.restoreState()
+    
+    # On ajoute la vague décorative par-dessus (elle s'harmonisera avec le fond bleu)
     draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
     
-    center_y = height - header_height / 2
+    center_y = height - header_height / 2 + 15
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 40, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
     if os.path.exists(logo_agri):
         c.drawImage(logo_agri, width - 40 - logo_size, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
+    
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        curr_y = height - 20 # Remonté un peu pour être bien dans le bleu
+        curr_y = height - 25 # Texte placé plus haut
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             text_content = str(row['texte']).strip()
             if idx == 0:
@@ -65,7 +74,7 @@ def draw_header(c, width, height, page_num, global_data):
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 8 # Espacement augmenté
+            curr_y -= size + 10 # Espacement pour la lisibilité
 
 def draw_technical_legend(c, x, y, width, height):
     """Dessine une légende technique stylisée avec icônes."""
