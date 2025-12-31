@@ -85,7 +85,7 @@ def draw_header(c, width, height, page_num, global_data):
     return header_height
 
 def draw_technical_legend(c, x, y, width, height, global_data):
-    """Dessine une légende technique centrée sur son espace."""
+    """Dessine une légende unique avec Lunes, Cultures, Actions et Couleurs."""
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
     c.setFillColor(HexColor('#FFF9C4'))
@@ -107,6 +107,7 @@ def draw_technical_legend(c, x, y, width, height, global_data):
     col1_x = x + 5
     col2_x = x + width/2 + 2
     
+    # SECTION 1: Lunes et Cultures en haut
     if not global_data["phases"].empty:
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
@@ -141,35 +142,34 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             c.drawString(col2_x + 10, temp_y, label[:15])
             temp_y -= 9
 
+    # SECTION 2: Actions en bas (largeur complète)
     if not global_data["actions"].empty:
-        # On affiche les actions en bas sur toute la largeur de la légende
-        temp_y = y + 5
+        temp_y = y + 16
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
-        c.drawString(col1_x, temp_y + 10, "• Actions")
+        c.drawString(col1_x, temp_y, "• Actions")
         c.setFillColor(COLORS['black'])
         curr_act_x = col1_x
-        # On affiche 4 actions max sur une ligne
         step_x = (width - 10) / 4
         for _, row in global_data["actions"].head(4).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['action']).strip()
             icon_path = get_agri_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, curr_act_x, temp_y, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, curr_act_x, temp_y - 8, width=icon_size, height=icon_size, mask='auto')
                 except: pass
             c.setFont("Helvetica", 5)
-            c.drawString(curr_act_x + 9, temp_y + 2, label[:10])
+            c.drawString(curr_act_x + 9, temp_y - 6, label[:10])
             curr_act_x += step_x
     
-    # Couleurs liturgiques en bas
+    # SECTION 3: Couleurs liturgiques en bas à droite
     if not global_data["couleurs"].empty:
-        temp_y = y + 5
+        temp_y = y + 16
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
-        c.drawString(col2_x, temp_y + 10, "• Couleurs")
+        c.drawString(col2_x, temp_y, "• Couleurs")
         c.setFillColor(COLORS['black'])
-        color_y = temp_y
+        color_x = col2_x
         for _, row in global_data["couleurs"].iterrows():
             color_name = str(row['couleur']).strip()
             hex_code = str(row['code_hex']).strip()
@@ -181,12 +181,12 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             c.setFillColor(color_obj)
             c.setLineWidth(0.3)
             c.setStrokeColor(HexColor('#333333'))
-            c.rect(col2_x, color_y - 4, 6, 6, fill=1, stroke=1)
+            c.rect(color_x, temp_y - 8, 6, 6, fill=1, stroke=1)
             
             c.setFillColor(COLORS['black'])
             c.setFont("Helvetica", 5)
-            c.drawString(col2_x + 8, color_y - 2, color_name[:12])
-            color_y -= 8
+            c.drawString(color_x + 8, temp_y - 6, color_name[:8])
+            color_x += 25
             
     c.restoreState()
 
