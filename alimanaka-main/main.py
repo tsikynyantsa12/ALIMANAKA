@@ -149,13 +149,13 @@ def draw_technical_legend(c, x, y, width, height, global_data):
     c.setFont("Helvetica-Bold", 7)
     c.drawCentredString(x + width/2, y + height - header_rect_h + 3, "LÉGENDE")
     
-    icon_size = 7
+    icon_size = 6
     col_width = width / 2 - 8
     col1_x = x + 5
     col2_x = x + width/2 + 2
     
     # ===== HAUT: Lunes et Cultures =====
-    top_y = y + height - 22
+    top_y = y + height - 20
     
     # Lunes (colonne gauche - haut)
     if not global_data["phases"].empty:
@@ -163,17 +163,17 @@ def draw_technical_legend(c, x, y, width, height, global_data):
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col1_x, top_y, "• Lunes")
         c.setFillColor(COLORS['black'])
-        temp_y = top_y - 8
+        temp_y = top_y - 7
         for _, row in global_data["phases"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['phase']).strip()
             icon_path = get_moon_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, col1_x, temp_y - 4, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, col1_x, temp_y - 3, width=icon_size, height=icon_size, mask='auto')
                 except: pass
             c.setFont("Helvetica", 5)
-            c.drawString(col1_x + 10, temp_y - 1, label[:12])
-            temp_y -= 8
+            c.drawString(col1_x + 9, temp_y, label[:12])
+            temp_y -= 7
 
     # Cultures (colonne droite - haut)
     if not global_data["cultures"].empty:
@@ -181,20 +181,20 @@ def draw_technical_legend(c, x, y, width, height, global_data):
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col2_x, top_y, "• Cultures")
         c.setFillColor(COLORS['black'])
-        temp_y = top_y - 8
+        temp_y = top_y - 7
         for _, row in global_data["cultures"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['culture']).strip()
             icon_path = get_culture_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, col2_x, temp_y - 4, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, col2_x, temp_y - 3, width=icon_size, height=icon_size, mask='auto')
                 except: pass
             c.setFont("Helvetica", 5)
-            c.drawString(col2_x + 10, temp_y - 1, label[:12])
-            temp_y -= 8
+            c.drawString(col2_x + 9, temp_y, label[:12])
+            temp_y -= 7
 
     # ===== BAS: Actions et Couleurs =====
-    bottom_y = y + 18
+    bottom_y = y + 22
     
     # Actions (colonne gauche - bas)
     if not global_data["actions"].empty:
@@ -202,33 +202,37 @@ def draw_technical_legend(c, x, y, width, height, global_data):
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col1_x, bottom_y, "• Actions")
         c.setFillColor(COLORS['black'])
-        temp_x = col1_x
+        act_y = bottom_y - 7
+        act_x = col1_x
         step_x = col_width / 2
         act_count = 0
         for _, row in global_data["actions"].head(4).iterrows():
             if act_count == 2:
-                temp_x = col1_x
-                bottom_y -= 8
+                act_x = col1_x
+                act_y -= 7
             icon_id = str(row['id']).strip().lower()
             label = str(row['action']).strip()
             icon_path = get_agri_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try: c.drawImage(icon_path, temp_x, bottom_y - 10, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, act_x, act_y - 4, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 4.5)
-            c.drawString(temp_x + 9, bottom_y - 8, label[:8])
-            temp_x += step_x
+            c.setFont("Helvetica", 5)
+            c.drawString(act_x + 8, act_y - 1, label[:8])
+            act_x += step_x
             act_count += 1
 
-    # Couleurs (colonne droite - bas)
+    # Couleurs (colonne droite - bas) - 2 colonnes compactes
     if not global_data["couleurs"].empty:
         c.setFont("Helvetica-Bold", 6)
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col2_x, bottom_y, "• Couleurs")
         c.setFillColor(COLORS['black'])
         
-        color_y = bottom_y - 8
-        color_x = col2_x
+        color_y = bottom_y - 7
+        color_x1 = col2_x
+        color_x2 = col2_x + width/4
+        color_count = 0
+        
         for _, row in global_data["couleurs"].iterrows():
             color_name = str(row['couleur']).strip()
             hex_code = str(row['code_hex']).strip()
@@ -237,17 +241,25 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             except:
                 color_obj = HexColor("#a8d5ba")
             
+            # Déterminer position (2 colonnes)
+            if color_count == 2:
+                color_y = bottom_y - 7
+                color_x1 = color_x2
+            
+            current_x = color_x1
+            
             # Carré de couleur
             c.setFillColor(color_obj)
-            c.setLineWidth(0.5)
+            c.setLineWidth(0.4)
             c.setStrokeColor(HexColor('#333333'))
-            c.rect(color_x, color_y - 6, 8, 8, fill=1, stroke=1)
+            c.rect(current_x, color_y - 5, 7, 7, fill=1, stroke=1)
             
             # Nom couleur
             c.setFillColor(COLORS['black'])
-            c.setFont("Helvetica", 4.5)
-            c.drawString(color_x + 10, color_y - 3, color_name[:10])
-            color_y -= 8
+            c.setFont("Helvetica", 5)
+            c.drawString(current_x + 9, color_y - 2, color_name[:8])
+            color_y -= 7
+            color_count += 1
             
     c.restoreState()
 
