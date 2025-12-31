@@ -10,6 +10,8 @@ from config.fonts import SIZE_HEADER_MAIN
 from config.colors import COLORS, MONTH_COLORS, COLOR_TEXT_SECONDARY, COLOR_HEADER, COLOR_BACKGROUND, COLOR_GRID, COLOR_HEADER_BG
 import math
 
+DESIGNER_INFO = "Design & Mise en page : [NOM DU DESIGNER] | Contact : [NUMÉRO DE TÉLÉPHONE]"
+
 def draw_wave_decoration(c, width, height, color, position='top'):
     """Dessine une vague décorative moderne"""
     wave_height = 80
@@ -217,6 +219,15 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin_x + photo_col_width + i * month_col_width
         draw_month(c, x, margin_y + 5 * scale_factor, month_col_width - 6 * scale_factor, height - header_h - margin_y - 15 * scale_factor, year, month, global_data)
+
+    # Signature Designer
+    c.saveState()
+    c.setFont("Helvetica-Oblique", 7)
+    c.setFillColor(HexColor('#444444'))
+    # Aligné à la limite droite du dernier mois
+    right_edge = margin_x + photo_col_width + 6 * month_col_width - 6 * scale_factor
+    c.drawRightString(right_edge, margin_y - 15 * scale_factor, DESIGNER_INFO)
+    c.restoreState()
 
 def generate_calendar():
     """Génère le PDF final."""
