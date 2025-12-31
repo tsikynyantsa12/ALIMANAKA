@@ -1,6 +1,6 @@
 import pandas as pd
 from reportlab.lib.colors import HexColor
-from config.colors import COLOR_TEXT, COLOR_TEXT_SECONDARY, COLOR_DIMANCHE, COLOR_GRID, COLOR_HEADER
+from config.colors import COLOR_TEXT, COLOR_TEXT_SECONDARY, COLOR_DIMANCHE, COLOR_GRID, COLOR_HEADER, COLOR_SUNDAY_BG
 from config.fonts import FONT_BOLD, FONT_REGULAR, FONT_ITALIC, SIZE_DAY_NUM, SIZE_DAY_NAME, SIZE_PROGRAM, SIZE_VERSE
 from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
 from reportlab.platypus import Paragraph, Frame
@@ -49,8 +49,12 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
 
     # Ligne de séparation fine
     canvas.saveState()
+    if is_sunday:
+        canvas.setFillColor(COLOR_SUNDAY_BG)
+        canvas.rect(x, y, width, height, fill=1, stroke=0)
+    
     canvas.setStrokeColor(COLOR_GRID)
-    canvas.setLineWidth(0.3)
+    canvas.setLineWidth(0.2)
     canvas.line(x, y, x + width, y)
     canvas.restoreState()
     
@@ -59,14 +63,21 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     icon_spacing = 1
     
     # COLONNE GAUCHE (Date)
-    left_x = x + 1
-    left_y = y + height - 6
+    left_x = x + 2
+    left_y = y + height - 7
     
-    # Numéro du jour
+    # Numéro du jour (Cercle décoratif si dimanche)
     day_color = HexColor("#8B0000") if is_sunday else HexColor("#1A1A1A")
+    if is_sunday:
+        canvas.saveState()
+        canvas.setStrokeColor(day_color)
+        canvas.setLineWidth(0.5)
+        canvas.circle(left_x + 3, left_y - 2, 5, stroke=1, fill=0)
+        canvas.restoreState()
+    
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
-    canvas.drawString(left_x, left_y, str(day_num))
+    canvas.drawString(left_x, left_y - 4, str(day_num))
     
     # Nom du jour
     left_y -= 5

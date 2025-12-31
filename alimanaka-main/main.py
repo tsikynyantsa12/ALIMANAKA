@@ -129,21 +129,19 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     days = get_days_in_month(year, month)
     month_data = get_month_data(month)
     
-    # Bordure extérieure du mois
+    # Bordure extérieure du mois (Bordures arrondies simulées)
     c.saveState()
     c.setStrokeColor(COLOR_GRID)
-    c.setLineWidth(0.5)
+    c.setLineWidth(0.8)
     c.rect(x, y, width, height, stroke=1, fill=0)
-    c.restoreState()
-
-    # Titre du mois avec fond léger
-    c.saveState()
+    
+    # Titre du mois avec fond stylisé
     c.setFillColor(COLOR_HEADER_BG)
-    c.rect(x, y + height - 20, width, 20, fill=1, stroke=0)
+    c.rect(x, y + height - 18, width, 18, fill=1, stroke=1)
     c.setFillColor(COLOR_HEADER)
-    c.setFont("Helvetica-Bold", 10)
+    c.setFont("Helvetica-Bold", 9)
     month_names = ["JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"]
-    c.drawCentredString(x + width/2, y + height - 14, month_names[month-1])
+    c.drawCentredString(x + width/2, y + height - 12, month_names[month-1])
     c.restoreState()
     
     # Calcul de la hauteur disponible et mise à l'échelle des lignes de jours

@@ -27,12 +27,13 @@ def get_liturgical_colors(global_data=None):
 # Système de couleurs pour le design (Cohérent et Accessible)
 COLOR_TEXT = HexColor("#1A1A1A")                # Anthracite pour une meilleure lisibilité sur fond clair
 COLOR_TEXT_SECONDARY = HexColor("#4A4A4A")     # Gris foncé pour le texte secondaire
-COLOR_HEADER = HexColor("#004080")             # Bleu légèrement plus vif pour les titres
-COLOR_HEADER_ACCENT = HexColor("#A62A2A")      # Rouge terre de Sienne pour les accents
-COLOR_DARK_BLUE = HexColor("#001F3F")          # Bleu nuit pour les contrastes
-COLOR_HEADER_BG = Color(0, 64, 128, alpha=0.08) # Bleu très pâle (8% d'opacité) pour les fonds de titre
-COLOR_GRID = Color(0, 0, 0, alpha=0.20)         # Noir léger (20% d'opacité) pour les bordures et lignes
-COLOR_BACKGROUND = HexColor("#FEFEFE")        # Fond presque blanc
+COLOR_HEADER = HexColor("#003366")             # Bleu marine profond
+COLOR_HEADER_ACCENT = HexColor("#8B0000")      # Rouge brique pour les accents
+COLOR_DARK_BLUE = HexColor("#001F3F")          # Bleu nuit
+COLOR_HEADER_BG = Color(0, 51, 102, alpha=0.08) # Bleu très pâle
+COLOR_GRID = Color(0, 0, 0, alpha=0.12)         # Gris très léger pour la grille
+COLOR_BACKGROUND = HexColor("#FFFFFF")        # Fond blanc
+COLOR_SUNDAY_BG = Color(139, 0, 0, alpha=0.05)  # Fond rouge très léger pour les dimanches
 
 # Semantic Colors
 COLOR_MESSE = HexColor("#4A6FA5")              # Service blue
