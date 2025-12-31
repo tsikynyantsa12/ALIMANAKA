@@ -159,27 +159,15 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     is_a4 = (page_size == PAGE_SIZE_A4)
     
     # Marges standards pour l'impression (env. 1cm = 28.3 pts)
-    margin_x = 30 if not is_a4 else 20
-    margin_y = 30 if not is_a4 else 20
+    margin_x = 30
+    margin_y = 30
     header_h = height * 0.216 # En-tête réduit pour maximiser le calendrier
     
-    if is_a4:
-        # Version A4 simplifiée : 3 mois par page (4 pages au total)
-        # Mais l'utilisateur demande "même style", on va essayer de garder une structure cohérente
-        # Pour A4 portrait, on peut mettre 2 mois côte à côte sur 3 rangées ? 
-        # Ou garder 6 mois mais c'est très serré.
-        # Faisons 6 mois mais avec des polices réduites
-        photo_col_width = (width - 2 * margin_x) * 0.20
-        months_area_width = width - photo_col_width - 2 * margin_x
-        month_col_width = months_area_width / 3 # 2 colonnes de 3 mois ? Non, restons sur une grille
-        num_cols = 3
-        num_rows = 2
-    else:
-        photo_col_width = (width - 2 * margin_x) * 0.18
-        months_area_width = width - photo_col_width - 2 * margin_x
-        month_col_width = months_area_width / 6
-        num_cols = 6
-        num_rows = 1
+    photo_col_width = (width - 2 * margin_x) * 0.18
+    months_area_width = width - photo_col_width - 2 * margin_x
+    month_col_width = months_area_width / 6
+    num_cols = 6
+    num_rows = 1
 
     global_data = get_global_data()
     draw_header(c, width, height, page_num, global_data)
@@ -192,35 +180,23 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     
     start_y = height - header_h - margin_y
     
-    # On ne dessine les photos que si c'est la version A3 ou si on a de la place
-    if not is_a4:
-        for i in range(2):
-            photo_idx = (page_num - 1) * 2 + i + 1
-            photo_path = f"assets/images/photo{photo_idx}.jpg"
-            if os.path.exists(photo_path):
-                img_y = start_y - (i + 1) * photo_h
-                c.saveState()
-                c.setStrokeColor(COLOR_GRID)
-                c.roundRect(margin_x, img_y + 10, photo_col_width - 5, photo_h - 15, 8, stroke=1, fill=0)
-                c.drawImage(photo_path, margin_x + 2, img_y + 12, width=photo_col_width - 9, height=photo_h - 19, preserveAspectRatio=True, anchor='c')
-                c.restoreState()
-        
-        legend_y = margin_y + 5
-        draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5, legend_h)
+    for i in range(2):
+        photo_idx = (page_num - 1) * 2 + i + 1
+        photo_path = f"assets/images/photo{photo_idx}.jpg"
+        if os.path.exists(photo_path):
+            img_y = start_y - (i + 1) * photo_h
+            c.saveState()
+            c.setStrokeColor(COLOR_GRID)
+            c.roundRect(margin_x, img_y + 10, photo_col_width - 5, photo_h - 15, 8, stroke=1, fill=0)
+            c.drawImage(photo_path, margin_x + 2, img_y + 12, width=photo_col_width - 9, height=photo_h - 19, preserveAspectRatio=True, anchor='c')
+            c.restoreState()
+    
+    legend_y = margin_y + 5
+    draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5, legend_h)
 
-        for i, month in enumerate(range(start_month, end_month + 1)):
-            x = margin_x + photo_col_width + i * month_col_width
-            draw_month(c, x, margin_y + 5, month_col_width - 6, height - header_h - margin_y - 15, year, month, global_data)
-    else:
-        # Version A4 : 6 mois en grille 2x3
-        month_w = (width - 2 * margin_x) / 2
-        month_h = (height - header_h - 2 * margin_y) / 3
-        for i, month in enumerate(range(start_month, end_month + 1)):
-            col = i % 2
-            row = i // 2
-            x = margin_x + col * month_w
-            y = height - header_h - margin_y - (row + 1) * month_h
-            draw_month(c, x + 2, y + 2, month_w - 4, month_h - 4, year, month, global_data)
+    for i, month in enumerate(range(start_month, end_month + 1)):
+        x = margin_x + photo_col_width + i * month_col_width
+        draw_month(c, x, margin_y + 5, month_col_width - 6, height - header_h - margin_y - 15, year, month, global_data)
 
 def generate_calendar():
     """Génère le PDF final."""
