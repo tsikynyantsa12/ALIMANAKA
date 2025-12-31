@@ -105,12 +105,11 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         f.addFromList(story, canvas)
 
     icon_size = 10  # Larger icons for better visibility
-    icon_spacing = 11  # Space between icons
+    icon_spacing = 1  # Space between icons
     
-    # Icons layout: top-right for moon, bottom-right for agriculture
-    icons_drawn = 0
+    # Icons layout: top-left for moon, bottom-right for agriculture (no overlap)
     
-    # Moon icon (top-right)
+    # Moon icon (top-left corner)
     if month_data and not month_data["lunes"].empty:
         lune_df = month_data["lunes"]
         lune_row = lune_df[lune_df['date'] == date_str]
@@ -118,25 +117,25 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             phase_id = lune_row.iloc[0].get('phase_id', '')
             moon_path = get_moon_icon(str(phase_id).strip().lower())
             if moon_path:
-                canvas.drawImage(moon_path, x + width - 12, y + height - 12, width=icon_size, height=icon_size, mask='auto')
+                # Moon positioned in top-left to avoid overlap with agricultural icons
+                canvas.drawImage(moon_path, x + 3, y + height - 12, width=icon_size, height=icon_size, mask='auto')
 
-    # Agricultural icons (bottom-right, stacked horizontally)
+    # Agricultural icons (bottom-right, stacked horizontally with proper spacing)
     if month_data and not month_data["agricole"].empty:
         agri_df = month_data["agricole"]
         agri_row = agri_df[agri_df['date'] == date_str]
         if not agri_row.empty:
             row = agri_row.iloc[0]
-            icon_x = x + width - (icon_size + 2)
+            # Start position: right edge minus space for 2 icons
+            icon_x = x + width - (icon_size * 2 + 4)
             
-            # Action icon (first, rightmost)
-            action_path = get_agri_icon(row.get('action_id', ''))
-            if action_path:
-                canvas.drawImage(action_path, icon_x, y + 2, width=icon_size, height=icon_size, mask='auto')
-                icon_x -= (icon_size + 1)
-                icons_drawn += 1
-            
-            # Culture icon (second, to the left)
+            # Culture icon (first, leftmost)
             culture_path = get_culture_icon(row.get('culture_id', ''))
             if culture_path:
                 canvas.drawImage(culture_path, icon_x, y + 2, width=icon_size, height=icon_size, mask='auto')
-                icons_drawn += 1
+                icon_x += (icon_size + icon_spacing)
+            
+            # Action icon (second, rightmost)
+            action_path = get_agri_icon(row.get('action_id', ''))
+            if action_path:
+                canvas.drawImage(action_path, icon_x, y + 2, width=icon_size, height=icon_size, mask='auto')

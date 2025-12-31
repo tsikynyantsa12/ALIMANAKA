@@ -10,11 +10,11 @@ from config.fonts import SIZE_HEADER_MAIN
 from config.colors import COLOR_TEXT, COLOR_GRID
 
 def draw_background(c, width, height):
-    bg_path = "assets/images/background_eglise.jpg"
+    bg_path = "assets/images/background_betafo.jpg"
     if os.path.exists(bg_path):
         c.saveState()
-        # Full HD, 100% visible, sharp
-        c.drawImage(bg_path, 0, 0, width=width, height=height, mask='auto')
+        # Full page background - preserve aspect ratio and fill completely
+        c.drawImage(bg_path, 0, 0, width=width, height=height, mask='auto', preserveAspectRatio=True)
         c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
