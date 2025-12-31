@@ -1,0 +1,7 @@
+numero_page,numero_photo,chemin,description
+1,1,assets/images/photo1.jpg,Photo page 1 bloc 1
+1,2,assets/images/photo2.jpg,Photo page 1 bloc 2
+2,3,assets/images/photo3.jpg,Photo page 2 bloc 1
+2,4,assets/images/photo4.jpg,Photo page 2 bloc 2
+2,5,assets/images/photo5.jpg,Photo supplémentaire
+2,6,assets/images/photo6.jpg,Photo supplémentaire

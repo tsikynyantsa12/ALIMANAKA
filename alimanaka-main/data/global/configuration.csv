@@ -1,0 +1,8 @@
+cle,valeur,description
+annee,2026,Année du calendrier
+designer_info,Design & Mise en page : [NOM DU DESIGNER] | Contact : [NUMÉRO DE TÉLÉPHONE],Information du designer
+logo_eglise,assets/images/logo_eglise.png,Chemin du logo de l'église
+logo_agri,assets/images/logo_agri.png,Chemin du logo agricole
+couleur_primaire,#1A237E,Couleur primaire du design
+couleur_secondaire,#CE93D8,Couleur secondaire (violet)
+couleur_background,#FFFFFF,Couleur de fond

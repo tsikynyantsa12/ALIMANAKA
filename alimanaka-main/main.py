@@ -5,13 +5,11 @@ from reportlab.lib.colors import HexColor, Color
 from config.page import PAGE_SIZE, PAGE_SIZE_A4, MARGIN
 from layout.day_row import draw_day_row, calculate_day_height
 from utils.date_utils import get_days_in_month
-from utils.csv_loader import get_month_data, get_global_data
+from utils.csv_loader import get_month_data, get_global_data, get_config_value, get_month_name, get_photos_for_page
 from config.fonts import SIZE_HEADER_MAIN
 from config.colors import COLORS, MONTH_COLORS, COLOR_TEXT_SECONDARY, COLOR_HEADER, COLOR_BACKGROUND, COLOR_GRID, COLOR_HEADER_BG
 from reportlab.lib.units import mm
 import math
-
-DESIGNER_INFO = "Design & Mise en page : [NOM DU DESIGNER] | Contact : [NUMÉRO DE TÉLÉPHONE]"
 
 def draw_wave_decoration(c, width, height, color, position='top'):
     """Dessine une vague décorative moderne centrée sur la zone imprimable."""
@@ -80,7 +78,8 @@ def draw_header(c, width, height, page_num, global_data):
     
     # 3. Colonne Droite
     c.setFont("Helvetica-Bold", 18)
-    c.drawCentredString(width - MARGIN - 30, height - MARGIN - header_height * 0.5, "2026")
+    year_str = get_config_value('annee', '2026', global_data)
+    c.drawCentredString(width - MARGIN - 30, height - MARGIN - header_height * 0.5, str(year_str))
     
     c.restoreState()
     return header_height
@@ -247,8 +246,8 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     c.roundRect(x, y + height - 18, width, 18, 5, fill=1, stroke=0)
     c.setFillColor(COLORS['white'])
     c.setFont("Helvetica-Bold", 9)
-    month_names = ["JANVIER / JANOARY", "FÉVRIER / FEBROARY", "MARS / MARTSA", "AVRIL / APRILY", "MAI / MAY", "JUIN / JONA", "JUILLET / JOLAY", "AOÛT / AOGOSITRA", "SEPTEMBRE / SEPTAMBRA", "OCTOBRE / OKTOBRA", "NOVEMBRE / NOVAMBRA", "DÉCEMBRE / DESAMBRA"]
-    c.drawCentredString(x + width/2, y + height - 12, month_names[month-1])
+    month_name = get_month_name(month, global_data)
+    c.drawCentredString(x + width/2, y + height - 12, month_name)
     c.restoreState()
     available_h = height - 20
     day_heights = [calculate_day_height(d, month_data) for d in days]
@@ -281,10 +280,10 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     
     start_y = height - MARGIN - header_h - 5 * scale_factor
     
-    for i in range(2):
-        photo_idx = (page_num - 1) * 2 + i + 1
-        photo_path = f"assets/images/photo{photo_idx}.jpg"
-        if os.path.exists(photo_path):
+    photos = get_photos_for_page(page_num, global_data)
+    for i, photo_info in enumerate(photos[:2]):
+        photo_path = photo_info.get('chemin', '')
+        if photo_path and os.path.exists(photo_path):
             img_y = start_y - (i + 1) * photo_h
             c.saveState()
             c.setStrokeColor(COLOR_GRID)
@@ -309,7 +308,8 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     c.saveState()
     c.setFont("Helvetica-Oblique", 7)
     c.setFillColor(HexColor('#444444'))
-    c.drawRightString(width - MARGIN, MARGIN / 2, DESIGNER_INFO)
+    designer_info = get_config_value('designer_info', 'Design & Mise en page : [NOM]', global_data)
+    c.drawRightString(width - MARGIN, MARGIN / 2, str(designer_info))
     c.restoreState()
 
 def generate_calendar():
@@ -319,10 +319,12 @@ def generate_calendar():
         os.makedirs("output")
         print("Dossier 'output' créé.")
     
+    global_data = get_global_data()
+    year = int(get_config_value('annee', '2026', global_data))
+    
     # Version A3
     print("Génération du PDF A3...")
     c3 = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)
-    year = 2026
     for page in [1, 2]:
         print(f"Dessin de la page {page} (A3)...")
         c3.setFillColor(COLOR_BACKGROUND)

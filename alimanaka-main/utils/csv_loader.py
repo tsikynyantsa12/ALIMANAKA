@@ -27,5 +27,40 @@ def get_global_data():
         "actions": load_csv("data/global/actions_agricoles.csv"),
         "phases": load_csv("data/global/phases_lunaires.csv"),
         "logos": load_csv("data/global/logos.csv"),
-        "entetes": load_csv("data/global/entetes.csv")
+        "entetes": load_csv("data/global/entetes.csv"),
+        "mois": load_csv("data/global/mois.csv"),
+        "photos": load_csv("data/global/photos.csv"),
+        "configuration": load_csv("data/global/configuration.csv")
     }
+
+def get_config_value(key, default=None, global_data=None):
+    """Récupère une valeur de configuration."""
+    if global_data is None:
+        global_data = get_global_data()
+    if not global_data.get("configuration", pd.DataFrame()).empty:
+        config_df = global_data["configuration"]
+        row = config_df[config_df['cle'] == key]
+        if not row.empty:
+            return row.iloc[0]['valeur']
+    return default
+
+def get_month_name(month_num, global_data=None):
+    """Récupère le nom d'un mois."""
+    if global_data is None:
+        global_data = get_global_data()
+    if not global_data.get("mois", pd.DataFrame()).empty:
+        mois_df = global_data["mois"]
+        row = mois_df[mois_df['numero'] == month_num]
+        if not row.empty:
+            return row.iloc[0]['nom_complet']
+    return f"Mois {month_num}"
+
+def get_photos_for_page(page_num, global_data=None):
+    """Récupère les photos pour une page donnée."""
+    if global_data is None:
+        global_data = get_global_data()
+    if not global_data.get("photos", pd.DataFrame()).empty:
+        photos_df = global_data["photos"]
+        rows = photos_df[photos_df['numero_page'] == page_num]
+        return rows.to_dict('records')
+    return []
