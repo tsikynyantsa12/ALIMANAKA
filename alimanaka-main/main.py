@@ -16,23 +16,29 @@ def draw_wave_decoration(c, width, height, color, position='top'):
     wave_amplitude = 20
     c.saveState()
     c.setFillColor(color)
+    
+    # Points de contrôle pour une courbe de Bézier harmonieuse
     if position == 'top':
         y_base = height - wave_height
-    else:
-        y_base = wave_height
-    p = c.beginPath()
-    if position == 'top':
+        p = c.beginPath()
         p.moveTo(0, height)
-        for x in range(0, int(width) + 1, 5):
-            y = y_base + wave_amplitude * math.sin(x * 0.02)
-            p.lineTo(x, y)
+        p.lineTo(0, y_base)
+        # Courbe cubique pour un aspect plus fluide
+        p.curveTo(width * 0.25, y_base + wave_amplitude * 2, 
+                  width * 0.75, y_base - wave_amplitude * 2, 
+                  width, y_base)
         p.lineTo(width, height)
     else:
+        y_base = wave_height
+        p = c.beginPath()
         p.moveTo(0, 0)
-        for x in range(0, int(width) + 1, 5):
-            y = y_base + wave_amplitude * math.sin(x * 0.02)
-            p.lineTo(x, y)
+        p.lineTo(0, y_base)
+        # Courbe identique mais inversée ou décalée pour le bas
+        p.curveTo(width * 0.25, y_base + wave_amplitude * 2, 
+                  width * 0.75, y_base - wave_amplitude * 2, 
+                  width, y_base)
         p.lineTo(width, 0)
+        
     p.close()
     c.drawPath(p, fill=1, stroke=0)
     c.restoreState()
