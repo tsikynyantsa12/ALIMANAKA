@@ -41,12 +41,14 @@ def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête avec les logos et les titres."""
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
-    header_height = height * 0.28
-    logo_size = header_height * 0.4
+    # Augmentation de 50% de la hauteur (0.28 * 1.5 = 0.42)
+    header_height = height * 0.42
+    logo_size = header_height * 0.3
     
     c.saveState()
     c.setFillColor(COLORS['blue_royal'])
-    c.rect(0, height - header_height + 30, width, header_height, fill=1, stroke=0)
+    # On remplit le rectangle bleu pour couvrir la nouvelle hauteur
+    c.rect(0, height - header_height, width, header_height, fill=1, stroke=0)
     c.restoreState()
     
     draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
@@ -59,7 +61,8 @@ def draw_header(c, width, height, page_num, global_data):
     
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        curr_y = height - 25
+        # On ajuste curr_y pour centrer le texte dans la nouvelle hauteur
+        curr_y = height - 40
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             text_content = str(row['texte']).strip()
             if idx == 0:
@@ -72,7 +75,7 @@ def draw_header(c, width, height, page_num, global_data):
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 10
+            curr_y -= size + 12
 
 def draw_technical_legend(c, x, y, width, height):
     """Dessine une légende technique stylisée avec icônes."""
@@ -155,7 +158,7 @@ def draw_page(c, year, start_month, end_month, page_num):
     # Marges standards pour l'impression (env. 1cm = 28.3 pts)
     margin_x = 30
     margin_y = 30
-    header_h = height * 0.28
+    header_h = height * 0.42
     
     photo_col_width = (width - 2 * margin_x) * 0.18
     months_area_width = width - photo_col_width - 2 * margin_x
