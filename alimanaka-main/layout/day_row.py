@@ -149,7 +149,8 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     
     # ===== MIDDLE COLUMN (Moon Phase - between text and agricultural icons) =====
     if moon_path:
-        moon_x = x + width - 24  # Between center text and right agricultural icons
+        # Position with margin: further left from agricultural icons
+        moon_x = x + width - 32  # Shifted left with margin from agri icons
         moon_y = y + height - 8
         try:
             canvas.drawImage(moon_path, moon_x, moon_y - icon_size, width=icon_size, height=icon_size, mask='auto')
