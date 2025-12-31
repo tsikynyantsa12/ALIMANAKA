@@ -53,39 +53,64 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     canvas.line(x, y, x + width, y)
     canvas.restoreState()
     
-    # ========== LAYOUT ORDER: Date/Name → Color Badge → Text → Icons ==========
-    # NO OVERLAPPING: Vertical positioning ensures clear separation
+    # ========== 3-COLUMN LAYOUT: LEFT | CENTER | RIGHT ==========
+    # LEFT: Date, Name, Badge, Moon Phase (no underline, stacked vertically)
+    # CENTER: Text content (liturgical events, readings, programs)
+    # RIGHT: Agricultural icons
     
     icon_size = 8  # Small consistent icons
-    icon_spacing = 2  # Space between icon and text
+    icon_spacing = 2
     
-    # ===== TOP SECTION (Date, Badge, Icons) =====
-    # STEP 1: Date and Day Number (top-left, highest position)
+    # ===== LEFT COLUMN (Date, Name, Badge, Moon Phase) =====
+    left_x = x + 2
+    left_y = y + height - 8
+    
+    # Line 1: Day Number
     day_color = HexColor("#E8B4B8") if is_sunday else HexColor("#F5F5F0")  # Soft red or warm white
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
-    canvas.drawString(x + 5, y + height - 10, str(day_num))  # Baseline at y + height - 10
+    canvas.drawString(left_x, left_y, str(day_num))
     
-    # STEP 2: Liturgical Color Badge (right of day number, no overlap)
+    # Line 2: Day Name (one line below)
+    left_y -= 7
+    canvas.setFillColor(HexColor("#F0E68C"))  # Softer light yellow
+    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
+    canvas.drawString(left_x, left_y, day_info["weekday"][:3].upper())
+    
+    # Line 3: Liturgical Color Badge
+    left_y -= 6
     if specific_data is not None and liturgical_color_id != "vert":
-        # Small colored badge positioned to right of day number
-        badge_width = 12
+        badge_width = 14
         badge_height = 5
-        badge_x = x + 15  # Right of day number
-        badge_y = y + height - 11  # Aligned with day number
-        
         color_obj = liturgical_colors.get(liturgical_color_id, HexColor("#90EE90"))
         canvas.setFillColor(color_obj)
         canvas.setLineWidth(0.5)
         canvas.setStrokeColor(COLOR_TEXT_SECONDARY)
-        canvas.rect(badge_x, badge_y, badge_width, badge_height, fill=1, stroke=1)
+        canvas.rect(left_x, left_y, badge_width, badge_height, fill=1, stroke=1)
     
-    # ===== MIDDLE SECTION (Text Content) =====
-    content_x = x + 5
-    event_y = y + height - 18  # Clear space below top section
+    # Line 4: Moon Phase Icon (if available)
+    left_y -= 7
+    moon_path = None
+    if month_data and not month_data["lunes"].empty:
+        lune_df = month_data["lunes"]
+        lune_row = lune_df[lune_df['date'] == date_str]
+        if not lune_row.empty:
+            phase_id = lune_row.iloc[0].get('phase_id', '')
+            moon_path = get_moon_icon(str(phase_id).strip().lower())
+    
+    if moon_path:
+        try:
+            canvas.drawImage(moon_path, left_x, left_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+        except:
+            pass
+    
+    # ===== CENTER COLUMN (Text Content) =====
+    center_x = x + 22  # Start after left column
+    center_width = width - 50  # Space for left + right
+    event_y = y + height - 12  # Start from top
     line_height = 7
     
-    # STEP 3: Text Content (liturgical + agricultural)
+    # Text Content (liturgical events, readings, programs)
     # 3a. Liturgical event name
     if specific_data is not None:
         name = specific_data.get('nom_dimanche', '')
@@ -93,7 +118,7 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             event_text = str(name)
             canvas.setFillColor(COLOR_TEXT)
             canvas.setFont(FONT_BOLD, SIZE_PROGRAM)
-            canvas.drawString(content_x, event_y, event_text)
+            canvas.drawString(center_x, event_y, event_text)
             event_y -= line_height
         
         # 3b. Readings (smaller, secondary)
@@ -108,9 +133,9 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             canvas.setFillColor(COLOR_TEXT_SECONDARY)
             canvas.setFont(FONT_ITALIC, SIZE_VERSE)
             # Truncate long readings to prevent overlap
-            if len(verse) > 35:
-                verse = verse[:32] + "…"
-            canvas.drawString(content_x, event_y, f"« {verse} »")
+            if len(verse) > 30:
+                verse = verse[:27] + "…"
+            canvas.drawString(center_x, event_y, f"« {verse} »")
             event_y -= line_height
     
     # 3c. Church programs
@@ -122,21 +147,14 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             text = f"{p.get('programme1', '')} {p.get('programme2', '')}".strip()
             if text:
                 # Truncate to prevent overlap
-                if len(text) > 35:
-                    text = text[:32] + "…"
+                if len(text) > 30:
+                    text = text[:27] + "…"
                 canvas.setFillColor(COLOR_TEXT_SECONDARY)
                 canvas.setFont(FONT_REGULAR, SIZE_PROGRAM - 1)
-                canvas.drawString(content_x, event_y, text)
+                canvas.drawString(center_x, event_y, text)
                 event_y -= line_height
     
-    # ===== BOTTOM SECTION (Day Name) =====
-    # Draw day name at bottom-left (clear separation from content)
-    canvas.setFillColor(HexColor("#F0E68C"))  # Softer light yellow
-    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
-    canvas.drawString(x + 5, y + 2, day_info["weekday"][:3].upper())
-    
-    # ===== RIGHT SECTION (Agricultural Icons - High Position) =====
-    # STEP 4: Agricultural Icons (positioned at right/top to avoid text overlap)
+    # ===== RIGHT COLUMN (Agricultural Icons) =====
     if month_data and not month_data["agricole"].empty:
         agri_df = month_data["agricole"]
         agri_row = agri_df[agri_df['date'] == date_str]
@@ -147,9 +165,9 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             culture_path = get_culture_icon(row.get('culture_id', ''))
             action_path = get_agri_icon(row.get('action_id', ''))
             
-            # Position icons at right side, TOP area (y + height - 9) to avoid text overlap
-            agri_icon_x = x + width - icon_size - 3
-            agri_icon_y = y + height - 9
+            # Position icons at right side, top area
+            agri_icon_x = x + width - icon_size - 2
+            agri_icon_y = y + height - 8
             
             # Draw action icon (rightmost)
             if action_path:
