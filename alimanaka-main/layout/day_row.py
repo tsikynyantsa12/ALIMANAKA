@@ -71,16 +71,21 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     left_x = x + 2
     left_y = y + height - 7
     
+    # Ajustement pour A4 (plus petit)
+    font_scale = 1.0
+    if width < 150: # Seuil arbitraire pour détecter A4 ou colonnes étroites
+        font_scale = 0.8
+    
     # Numéro du jour
     day_color = COLORS['red_carmin'] if is_sunday else COLORS['black']
     canvas.setFillColor(day_color)
-    canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
+    canvas.setFont(FONT_BOLD, SIZE_DAY_NUM * font_scale)
     canvas.drawString(left_x, left_y - 4, str(day_num))
     
     # Nom du jour
-    left_y -= 5
+    left_y -= 5 * font_scale
     canvas.setFillColor(COLORS['dark_blue'])
-    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
+    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME * font_scale)
     canvas.drawString(left_x, left_y - 4, day_info["weekday"][:3].upper())
     
     # Badge de couleur liturgique

@@ -158,18 +158,30 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     width, height = page_size
     is_a4 = (page_size == PAGE_SIZE_A4)
     
-    # Marges standards pour l'impression (env. 1cm = 28.3 pts)
-    margin_x = 30
-    margin_y = 30
-    header_h = height * 0.216 # En-tête réduit pour maximiser le calendrier
+    # Échelle pour A4 (rapport entre A4 landscape et A3 landscape)
+    # A3 landscape: 1190.55 x 841.89
+    # A4 landscape: 841.89 x 595.28
+    # Rapport: ~0.707 (1/sqrt(2))
+    scale_factor = 0.707 if is_a4 else 1.0
+    
+    # Marges ajustées
+    margin_x = 30 * scale_factor
+    margin_y = 30 * scale_factor
+    header_h = height * 0.216 
     
     photo_col_width = (width - 2 * margin_x) * 0.18
     months_area_width = width - photo_col_width - 2 * margin_x
     month_col_width = months_area_width / 6
-    num_cols = 6
-    num_rows = 1
-
+    
     global_data = get_global_data()
+    
+    # Application de l'échelle globale pour A4 si nécessaire
+    if is_a4:
+        c.saveState()
+        # On pourrait utiliser c.scale(0.707, 0.707) mais ça affecterait les coordonnées.
+        # Il est préférable de passer le scale_factor aux fonctions de dessin ou d'ajuster les polices.
+        pass
+
     draw_header(c, width, height, page_num, global_data)
     draw_wave_decoration(c, width, height, COLORS['gold'], 'bottom')
 
@@ -187,16 +199,16 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
             img_y = start_y - (i + 1) * photo_h
             c.saveState()
             c.setStrokeColor(COLOR_GRID)
-            c.roundRect(margin_x, img_y + 10, photo_col_width - 5, photo_h - 15, 8, stroke=1, fill=0)
-            c.drawImage(photo_path, margin_x + 2, img_y + 12, width=photo_col_width - 9, height=photo_h - 19, preserveAspectRatio=True, anchor='c')
+            c.roundRect(margin_x, img_y + 10 * scale_factor, photo_col_width - 5 * scale_factor, photo_h - 15 * scale_factor, 8 * scale_factor, stroke=1, fill=0)
+            c.drawImage(photo_path, margin_x + 2 * scale_factor, img_y + 12 * scale_factor, width=photo_col_width - 9 * scale_factor, height=photo_h - 19 * scale_factor, preserveAspectRatio=True, anchor='c')
             c.restoreState()
     
-    legend_y = margin_y + 5
-    draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5, legend_h)
+    legend_y = margin_y + 5 * scale_factor
+    draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5 * scale_factor, legend_h)
 
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin_x + photo_col_width + i * month_col_width
-        draw_month(c, x, margin_y + 5, month_col_width - 6, height - header_h - margin_y - 15, year, month, global_data)
+        draw_month(c, x, margin_y + 5 * scale_factor, month_col_width - 6 * scale_factor, height - header_h - margin_y - 15 * scale_factor, year, month, global_data)
 
 def generate_calendar():
     """Génère le PDF final."""
