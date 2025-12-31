@@ -41,16 +41,14 @@ def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête avec les logos et les titres."""
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
-    header_height = height * 0.28 # Augmenté significativement pour éviter que la vague ne coupe le texte
+    header_height = height * 0.28
     logo_size = header_height * 0.4
     
-    # On remplit d'abord tout le rectangle du haut avec du bleu pour assurer un fond plein derrière le texte
     c.saveState()
     c.setFillColor(COLORS['blue_royal'])
     c.rect(0, height - header_height + 30, width, header_height, fill=1, stroke=0)
     c.restoreState()
     
-    # On ajoute la vague décorative par-dessus (elle s'harmonisera avec le fond bleu)
     draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
     
     center_y = height - header_height / 2 + 15
@@ -61,7 +59,7 @@ def draw_header(c, width, height, page_num, global_data):
     
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        curr_y = height - 25 # Texte placé plus haut
+        curr_y = height - 25
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             text_content = str(row['texte']).strip()
             if idx == 0:
@@ -74,7 +72,7 @@ def draw_header(c, width, height, page_num, global_data):
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 10 # Espacement pour la lisibilité
+            curr_y -= size + 10
 
 def draw_technical_legend(c, x, y, width, height):
     """Dessine une légende technique stylisée avec icônes."""
@@ -93,7 +91,6 @@ def draw_technical_legend(c, x, y, width, height):
     c.setFont("Helvetica", 7)
     c.setFillColor(COLORS['black'])
     
-    # On dessine les icônes à côté du texte
     items = [
         ("pleine", "Phase Lunaire"),
         ("riz", "Culture / Travail"),
@@ -118,7 +115,6 @@ def draw_technical_legend(c, x, y, width, height):
         c.drawString(x + 22, curr_y + 1, label)
         curr_y -= 15
         
-    # Cas particulier pour la couleur liturgique (carré de couleur)
     c.setFillColor(COLORS['red_carmin'])
     c.rect(x + 8, curr_y - 2, 10, 10, fill=1, stroke=1)
     c.setFillColor(COLORS['black'])
@@ -156,30 +152,40 @@ def draw_month(c, x, y, width, height, year, month, global_data):
 def draw_page(c, year, start_month, end_month, page_num):
     """Dessine une page : 1 col (2 photos + légende) | 6 mois."""
     width, height = PAGE_SIZE
-    margin_x = 20
-    margin_y = 20
-    header_h = height * 0.20
-    photo_col_width = width * 0.18
+    # Marges standards pour l'impression (env. 1cm = 28.3 pts)
+    margin_x = 30
+    margin_y = 30
+    header_h = height * 0.28
+    
+    photo_col_width = (width - 2 * margin_x) * 0.18
     months_area_width = width - photo_col_width - 2 * margin_x
     month_col_width = months_area_width / 6
+    
     global_data = get_global_data()
     draw_header(c, width, height, page_num, global_data)
     draw_wave_decoration(c, width, height, COLORS['gold'], 'bottom')
+
+    # Zone utile sous le header
     content_h = height - header_h - 2 * margin_y
     photo_h = content_h * 0.38
     legend_h = content_h * 0.20
+    
+    start_y = height - header_h - margin_y
+    
     for i in range(2):
         photo_idx = (page_num - 1) * 2 + i + 1
         photo_path = f"assets/images/photo{photo_idx}.jpg"
         if os.path.exists(photo_path):
-            img_y = height - header_h - margin_y - (i + 1) * photo_h
+            img_y = start_y - (i + 1) * photo_h
             c.saveState()
             c.setStrokeColor(COLOR_GRID)
             c.roundRect(margin_x, img_y + 10, photo_col_width - 5, photo_h - 15, 8, stroke=1, fill=0)
             c.drawImage(photo_path, margin_x + 2, img_y + 12, width=photo_col_width - 9, height=photo_h - 19, preserveAspectRatio=True, anchor='c')
             c.restoreState()
-    legend_y = margin_y + 10
+    
+    legend_y = margin_y + 5
     draw_technical_legend(c, margin_x, legend_y, photo_col_width - 5, legend_h)
+
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin_x + photo_col_width + i * month_col_width
         draw_month(c, x, margin_y + 10, month_col_width - 6, height - header_h - margin_y - 20, year, month, global_data)
