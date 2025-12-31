@@ -53,8 +53,8 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     canvas.line(x, y, x + width, y)
     canvas.restoreState()
     
-    # Day Typography - Sundays in soft red, weekdays in warm white
-    # Warm white (#F5F5F0) for better harmony, soft red for Sundays
+    # Day Typography (top-left aligned for clear reading order)
+    # Day number - Sundays in soft red, weekdays in warm white
     day_color = HexColor("#E8B4B8") if is_sunday else HexColor("#F5F5F0")  # Soft red or warm white
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
@@ -65,25 +65,65 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
     canvas.drawString(x + 6, y + 6, day_info["weekday"][:3].upper())
     
+    icon_size = 8  # Small consistent icons
+    icon_spacing = 2  # Space between icon and text
+    
+    # Content area for events (with space for icons on left)
     content_x = x + 26
     content_width = width - 42
+    event_y = y + height - 18  # Start below day number
+    line_height = 8
     
-    story = []
+    # Render events with icons inline (left-aligned)
+    rendered_events = 0
+    
+    # 1. Liturgical events (with optional moon icon)
     if specific_data is not None:
         name = specific_data.get('nom_dimanche', '')
         if pd.notna(name) and name:
-            story.append(Paragraph(str(name), style_program))
+            event_text = str(name)
+            
+            # Try to get moon phase icon for this day
+            moon_path = None
+            if month_data and not month_data["lunes"].empty:
+                lune_df = month_data["lunes"]
+                lune_row = lune_df[lune_df['date'] == date_str]
+                if not lune_row.empty:
+                    phase_id = lune_row.iloc[0].get('phase_id', '')
+                    moon_path = get_moon_icon(str(phase_id).strip().lower())
+            
+            # Draw moon icon if available (left of text)
+            icon_x = content_x
+            text_x = content_x + icon_spacing + 2
+            if moon_path:
+                try:
+                    canvas.drawImage(moon_path, icon_x, event_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+                    text_x += icon_size + icon_spacing
+                except:
+                    pass
+            
+            # Draw event text
+            canvas.setFillColor(COLOR_TEXT)
+            canvas.setFont(FONT_BOLD, SIZE_PROGRAM)
+            canvas.drawString(text_x, event_y, event_text)
+            rendered_events += 1
+            event_y -= line_height
         
+        # Readings (smaller, no icon)
         readings = []
         for col in ['lecture1', 'psaume', 'lecture2', 'evangile']:
             val = specific_data.get(col)
             if pd.notna(val) and str(val).strip():
                 readings.append(str(val).strip())
         
-        verse = " | ".join(readings)
-        if verse:
-            story.append(Paragraph(f"« {verse} »", style_verse))
-
+        if readings:
+            verse = " | ".join(readings)
+            canvas.setFillColor(COLOR_TEXT_SECONDARY)
+            canvas.setFont(FONT_ITALIC, SIZE_VERSE)
+            canvas.drawString(content_x, event_y, f"« {verse} »")
+            event_y -= line_height
+    
+    # 2. Church programs (with action icon)
     if month_data and not month_data["eglise"].empty:
         prog_df = month_data["eglise"]
         prog_row = prog_df[prog_df['date'] == date_str]
@@ -91,44 +131,46 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             p = prog_row.iloc[0]
             text = f"{p.get('programme1', '')} {p.get('programme2', '')}".strip()
             if text:
-                story.append(Paragraph(text, ParagraphStyle('Small', parent=styles['Normal'], fontSize=SIZE_PROGRAM-1, leading=SIZE_PROGRAM+1, textColor=COLOR_TEXT_SECONDARY)))
-
-    if story:
-        f = Frame(content_x, y, content_width, height, leftPadding=1, bottomPadding=2, rightPadding=1, topPadding=1, showBoundary=0)
-        f.addFromList(story, canvas)
-
-    icon_size = 10  # Larger icons for better visibility
-    icon_spacing = 1  # Space between icons
+                # Programs don't have semantic icons, render as simple text
+                canvas.setFillColor(COLOR_TEXT_SECONDARY)
+                canvas.setFont(FONT_REGULAR, SIZE_PROGRAM - 1)
+                canvas.drawString(content_x, event_y, text)
+                rendered_events += 1
+                event_y -= line_height
     
-    # Icons layout: top-left for moon, bottom-right for agriculture (no overlap)
-    
-    # Moon icon (top-left corner)
-    if month_data and not month_data["lunes"].empty:
-        lune_df = month_data["lunes"]
-        lune_row = lune_df[lune_df['date'] == date_str]
-        if not lune_row.empty:
-            phase_id = lune_row.iloc[0].get('phase_id', '')
-            moon_path = get_moon_icon(str(phase_id).strip().lower())
-            if moon_path:
-                # Moon positioned in top-left to avoid overlap with agricultural icons
-                canvas.drawImage(moon_path, x + 3, y + height - 12, width=icon_size, height=icon_size, mask='auto')
-
-    # Agricultural icons (bottom-right, stacked horizontally with proper spacing)
+    # 3. Agricultural events (with culture + action icons)
     if month_data and not month_data["agricole"].empty:
         agri_df = month_data["agricole"]
         agri_row = agri_df[agri_df['date'] == date_str]
         if not agri_row.empty:
             row = agri_row.iloc[0]
-            # Start position: right edge minus space for 2 icons
-            icon_x = x + width - (icon_size * 2 + 4)
             
-            # Culture icon (first, leftmost)
+            # Get culture and action icons
             culture_path = get_culture_icon(row.get('culture_id', ''))
-            if culture_path:
-                canvas.drawImage(culture_path, icon_x, y + 2, width=icon_size, height=icon_size, mask='auto')
-                icon_x += (icon_size + icon_spacing)
-            
-            # Action icon (second, rightmost)
             action_path = get_agri_icon(row.get('action_id', ''))
+            
+            # Icons positioned left of text
+            icon_x = content_x
+            text_x = content_x + icon_spacing + 2
+            
+            # Draw culture icon (first icon, leftmost)
+            if culture_path:
+                try:
+                    canvas.drawImage(culture_path, icon_x, event_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+                    text_x = content_x + icon_size + icon_spacing + 2
+                except:
+                    pass
+            
+            # Draw action icon (second icon, next to culture)
             if action_path:
-                canvas.drawImage(action_path, icon_x, y + 2, width=icon_size, height=icon_size, mask='auto')
+                try:
+                    canvas.drawImage(action_path, icon_x + icon_size + icon_spacing, event_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+                    text_x = content_x + (icon_size + icon_spacing) * 2 + 2
+                except:
+                    pass
+            
+            # Agricultural event label (if any)
+            if culture_path or action_path:
+                canvas.setFillColor(COLOR_TEXT_SECONDARY)
+                canvas.setFont(FONT_REGULAR, SIZE_PROGRAM - 1)
+                canvas.drawString(text_x, event_y, "Agriculture")
