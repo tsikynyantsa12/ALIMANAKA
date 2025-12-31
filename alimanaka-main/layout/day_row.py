@@ -88,8 +88,7 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         canvas.setStrokeColor(COLOR_TEXT_SECONDARY)
         canvas.rect(left_x, left_y, badge_width, badge_height, fill=1, stroke=1)
     
-    # Line 4: Moon Phase Icon (if available)
-    left_y -= 7
+    # Get moon phase icon (will place between text and agricultural icons)
     moon_path = None
     if month_data and not month_data["lunes"].empty:
         lune_df = month_data["lunes"]
@@ -97,12 +96,6 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
         if not lune_row.empty:
             phase_id = lune_row.iloc[0].get('phase_id', '')
             moon_path = get_moon_icon(str(phase_id).strip().lower())
-    
-    if moon_path:
-        try:
-            canvas.drawImage(moon_path, left_x, left_y - icon_size, width=icon_size, height=icon_size, mask='auto')
-        except:
-            pass
     
     # ===== CENTER COLUMN (Text Content) =====
     center_x = x + 22  # Start after left column
@@ -153,6 +146,15 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
                 canvas.setFont(FONT_REGULAR, SIZE_PROGRAM - 1)
                 canvas.drawString(center_x, event_y, text)
                 event_y -= line_height
+    
+    # ===== MIDDLE COLUMN (Moon Phase - between text and agricultural icons) =====
+    if moon_path:
+        moon_x = x + width - 24  # Between center text and right agricultural icons
+        moon_y = y + height - 8
+        try:
+            canvas.drawImage(moon_path, moon_x, moon_y - icon_size, width=icon_size, height=icon_size, mask='auto')
+        except:
+            pass
     
     # ===== RIGHT COLUMN (Agricultural Icons) =====
     if month_data and not month_data["agricole"].empty:
