@@ -99,7 +99,7 @@ def generate_calendar():
 
 def draw_page(c, year, start_month, end_month, page_num):
     width, height = PAGE_SIZE
-    margin = 15
+    margin = 12  # Optimized margin (reduced from 15)
     col_width = (width - 2 * margin) / 6
     global_data = get_global_data()
     header_height_req = height * 0.22  # Optimized header height
@@ -107,14 +107,14 @@ def draw_page(c, year, start_month, end_month, page_num):
 
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin + i * col_width
-        # Visual separation by spacing and thin lines
+        # Visual separation by thin lines (reduced spacing)
         if i > 0:
             c.setStrokeColor(COLOR_GRID)
             c.setLineWidth(0.5)
-            c.line(x - 4, margin, x - 4, height - header_height_req - 10)
+            c.line(x - 3, margin, x - 3, height - header_height_req - 8)
             
-        # Gains more vertical space for calendar content (more padding below header)
-        draw_month(c, x, margin, col_width - 8, height - header_height_req - 15, year, month, global_data)
+        # Optimized month layout (compact spacing, more content area)
+        draw_month(c, x, margin, col_width - 6, height - header_height_req - 12, year, month, global_data)
 
 def draw_month(c, x, y, width, height, year, month, global_data):
     from config.colors import COLOR_HEADER
@@ -122,29 +122,23 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     days = get_days_in_month(year, month)
     month_data = get_month_data(month)
     
-    # Month Border (subtle frame)
-    c.saveState()
-    c.setStrokeColor(COLOR_HEADER)
-    c.setLineWidth(0.75)
-    c.setFillAlpha(0.02)
-    c.rect(x, y, width, height, fill=0, stroke=1)
-    c.setFillAlpha(1.0)
-    c.restoreState()
+    # Month Border (subtle frame - removed for cleaner look)
+    # (Using thin lines only, no background fills)
     
-    # Month Title (Uppercase, Bold, No background)
+    # Month Title (Uppercase, Bold, Compact spacing)
     c.saveState()
     c.setFillColor(COLOR_TEXT)
-    c.setFont("Helvetica-Bold", 12)
+    c.setFont("Helvetica-Bold", 11)  # Reduced from 12 for better proportion
     month_names = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
-    c.drawCentredString(x + width/2, y + height - 10, month_names[month-1].upper())
+    c.drawCentredString(x + width/2, y + height - 8, month_names[month-1].upper())  # Reduced padding from 10 to 8
     
-    # Underline for month title
+    # Underline for month title (thin, subtle)
     c.setStrokeColor(COLOR_HEADER)
-    c.setLineWidth(1.2)
-    c.line(x + 10, y + height - 14, x + width - 10, y + height - 14)
+    c.setLineWidth(1.0)
+    c.line(x + 8, y + height - 12, x + width - 8, y + height - 12)  # Reduced from 10/14
     c.restoreState()
     
-    available_height = height - 20
+    available_height = height - 16  # Reduced from 20 (saves 4pt)
     day_heights = [calculate_day_height(d, month_data) for d in days]
     total_req = sum(day_heights)
     scale = min(1.0, available_height / total_req)

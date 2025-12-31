@@ -58,21 +58,21 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     day_color = HexColor("#E8B4B8") if is_sunday else HexColor("#F5F5F0")  # Soft red or warm white
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
-    canvas.drawString(x + 6, y + height - 14, str(day_num))
+    canvas.drawString(x + 5, y + height - 13, str(day_num))  # Reduced from 6/14 to 5/13
     
     # Day name - soft light tone for secondary hierarchy
     canvas.setFillColor(HexColor("#F0E68C"))  # Softer light yellow
     canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
-    canvas.drawString(x + 6, y + 6, day_info["weekday"][:3].upper())
+    canvas.drawString(x + 5, y + 4, day_info["weekday"][:3].upper())  # Reduced from 6 to 5, y from 6 to 4
     
     icon_size = 8  # Small consistent icons
     icon_spacing = 2  # Space between icon and text
     
     # Content area for events (with space for icons on left)
-    content_x = x + 26
-    content_width = width - 42
-    event_y = y + height - 18  # Start below day number
-    line_height = 8
+    content_x = x + 24  # Reduced from 26 (compact day column)
+    content_width = width - 40  # Adjusted width
+    event_y = y + height - 16  # Reduced from 18 (saves 2pt per day)
+    line_height = 7  # Reduced from 8 (tighter event spacing)
     
     # Render events with icons inline (left-aligned)
     rendered_events = 0
