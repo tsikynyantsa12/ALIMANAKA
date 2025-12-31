@@ -41,9 +41,9 @@ def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête avec les logos et les titres."""
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
-    # Augmentation de 15% par rapport à l'original (0.20 * 1.15 = 0.23)
-    header_height = height * 0.23
-    logo_size = header_height * 0.45
+    # Augmentation de 8% par rapport à l'original (0.20 * 1.08 = 0.216)
+    header_height = height * 0.216
+    logo_size = header_height * 0.5
     
     c.saveState()
     c.setFillColor(COLORS['blue_royal'])
@@ -53,7 +53,8 @@ def draw_header(c, width, height, page_num, global_data):
     
     draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
     
-    center_y = height - header_height / 2 + 10
+    # Logos positionnés plus haut (center_y augmenté)
+    center_y = height - header_height / 2 + 15
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 40, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
     if os.path.exists(logo_agri):
@@ -61,21 +62,21 @@ def draw_header(c, width, height, page_num, global_data):
     
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        # On ajuste curr_y pour centrer le texte
-        curr_y = height - 25
+        # Texte repositionné pour l'en-tête réduit
+        curr_y = height - 20
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             text_content = str(row['texte']).strip()
             if idx == 0:
-                size = SIZE_HEADER_MAIN
+                size = SIZE_HEADER_MAIN * 0.9 # Légère réduction pour l'espace
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
             else:
-                size = SIZE_HEADER_MAIN * 0.6
+                size = SIZE_HEADER_MAIN * 0.55
                 c.setFont("Helvetica-Bold", size)
                 c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 8
+            curr_y -= size + 6
 
 def draw_technical_legend(c, x, y, width, height):
     """Dessine une légende technique stylisée avec icônes."""
@@ -158,7 +159,7 @@ def draw_page(c, year, start_month, end_month, page_num):
     # Marges standards pour l'impression (env. 1cm = 28.3 pts)
     margin_x = 30
     margin_y = 30
-    header_h = height * 0.23
+    header_h = height * 0.216 # En-tête réduit pour maximiser le calendrier
     
     photo_col_width = (width - 2 * margin_x) * 0.18
     months_area_width = width - photo_col_width - 2 * margin_x
@@ -170,8 +171,8 @@ def draw_page(c, year, start_month, end_month, page_num):
 
     # Zone utile sous le header
     content_h = height - header_h - 2 * margin_y
-    photo_h = content_h * 0.38
-    legend_h = content_h * 0.20
+    photo_h = content_h * 0.40 # Légèrement augmenté
+    legend_h = content_h * 0.18 # Légèrement réduit
     
     start_y = height - header_h - margin_y
     
@@ -182,6 +183,7 @@ def draw_page(c, year, start_month, end_month, page_num):
             img_y = start_y - (i + 1) * photo_h
             c.saveState()
             c.setStrokeColor(COLOR_GRID)
+            # Cadres photos optimisés
             c.roundRect(margin_x, img_y + 10, photo_col_width - 5, photo_h - 15, 8, stroke=1, fill=0)
             c.drawImage(photo_path, margin_x + 2, img_y + 12, width=photo_col_width - 9, height=photo_h - 19, preserveAspectRatio=True, anchor='c')
             c.restoreState()
@@ -191,7 +193,8 @@ def draw_page(c, year, start_month, end_month, page_num):
 
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = margin_x + photo_col_width + i * month_col_width
-        draw_month(c, x, margin_y + 10, month_col_width - 6, height - header_h - margin_y - 20, year, month, global_data)
+        # Zone calendrier maximisée
+        draw_month(c, x, margin_y + 5, month_col_width - 6, height - header_h - margin_y - 15, year, month, global_data)
 
 def generate_calendar():
     """Génère le PDF final."""
