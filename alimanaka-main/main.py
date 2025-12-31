@@ -212,27 +212,36 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
 
 def generate_calendar():
     """Génère le PDF final."""
-    if not os.path.exists("output"): os.makedirs("output")
+    print("Début de la génération des calendriers...")
+    if not os.path.exists("output"): 
+        os.makedirs("output")
+        print("Dossier 'output' créé.")
     
     # Version A3
+    print("Génération du PDF A3...")
     c3 = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)
     year = 2026
     for page in [1, 2]:
+        print(f"Dessin de la page {page} (A3)...")
         c3.setFillColor(COLOR_BACKGROUND)
         c3.rect(0, 0, PAGE_SIZE[0], PAGE_SIZE[1], fill=1, stroke=0)
         draw_page(c3, year, 1 if page == 1 else 7, 6 if page == 1 else 12, page, PAGE_SIZE)
         c3.showPage()
     c3.save()
+    print("Fichier A3 sauvegardé : output/calendrier_A3.pdf")
 
     # Version A4
+    print("Génération du PDF A4...")
     c4 = canvas.Canvas("output/calendrier_A4.pdf", pagesize=PAGE_SIZE_A4)
     for page in [1, 2]:
+        print(f"Dessin de la page {page} (A4)...")
         c4.setFillColor(COLOR_BACKGROUND)
         c4.rect(0, 0, PAGE_SIZE_A4[0], PAGE_SIZE_A4[1], fill=1, stroke=0)
         draw_page(c4, year, 1 if page == 1 else 7, 6 if page == 1 else 12, page, PAGE_SIZE_A4)
         c4.showPage()
     c4.save()
-    print("PDFs générés avec succès.")
+    print("Fichier A4 sauvegardé : output/calendrier_A4.pdf")
+    print("Tous les PDFs ont été générés avec succès.")
 
 if __name__ == "__main__":
     generate_calendar()
