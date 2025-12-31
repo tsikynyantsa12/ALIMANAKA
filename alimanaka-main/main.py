@@ -1,3 +1,13 @@
+"""
+CALENDRIER AGRICOLE ET LITURGIQUE FLM 2026
+==========================================
+Module principal pour la génération du calendrier combinant données liturgiques,
+agricoles et pastorales. Ce script génère deux versions PDF (A3 et A4 en paysage).
+
+Auteur: FLM - Fiangonana Loterana Malagasy
+Année: 2026
+"""
+
 import os
 import pandas as pd
 from reportlab.pdfgen import canvas
@@ -12,7 +22,16 @@ from reportlab.lib.units import mm
 import math
 
 def draw_wave_decoration(c, width, height, color, position='top'):
-    """Dessine une vague décorative moderne centrée sur la zone imprimable."""
+    """
+    Dessine une vague décorative moderne centrée sur la zone imprimable.
+    
+    Args:
+        c: Canvas ReportLab
+        width: Largeur de la page
+        height: Hauteur de la page
+        color: Couleur de la vague (HexColor)
+        position: 'top' pour haut, 'bottom' pour bas
+    """
     wave_height = 80
     wave_amplitude = 20
     c.saveState()
@@ -43,9 +62,22 @@ def draw_wave_decoration(c, width, height, color, position='top'):
     c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
-    """Dessine l'en-tête ultra-compact centré sur la zone imprimable."""
-    logo_eglise = "assets/images/logo_eglise.png"
-    # Hauteur de l'en-tête par rapport à la zone utile
+    """
+    Dessine l'en-tête de la page avec 3 colonnes : Logo | Infos | Année.
+    Charge dynamiquement les données depuis les CSV.
+    
+    Args:
+        c: Canvas ReportLab
+        width: Largeur de la page
+        height: Hauteur de la page
+        page_num: Numéro de la page
+        global_data: Dictionnaire contenant les données globales chargées depuis CSV
+        
+    Returns:
+        float: Hauteur de l'en-tête
+    """
+    # Chargement dynamique du logo depuis configuration
+    logo_eglise = get_config_value('logo_eglise', 'assets/images/logo_eglise.png', global_data)
     header_height = (height - 2*MARGIN) * 0.08
     usable_width = width - 2*MARGIN
     
@@ -60,7 +92,7 @@ def draw_header(c, width, height, page_num, global_data):
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, MARGIN + 10, height - MARGIN - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
     
-    # 2. Colonne Centrale
+    # 2. Colonne Centrale : Infos du calendrier (depuis entetes.csv)
     c.setFillColor(HexColor('#1A237E'))
     if not global_data["entetes"].empty:
         curr_y = height - MARGIN - 5
@@ -76,7 +108,7 @@ def draw_header(c, width, height, page_num, global_data):
                 c.drawCentredString(width/2, curr_y, text)
                 curr_y -= (c._fontsize + 2)
     
-    # 3. Colonne Droite
+    # 3. Colonne Droite : Année (depuis configuration.csv)
     c.setFont("Helvetica-Bold", 18)
     year_str = get_config_value('annee', '2026', global_data)
     c.drawCentredString(width - MARGIN - 30, height - MARGIN - header_height * 0.5, str(year_str))
@@ -85,7 +117,22 @@ def draw_header(c, width, height, page_num, global_data):
     return header_height
 
 def draw_technical_legend(c, x, y, width, height, global_data):
-    """Dessine une légende avec 4 sections: Lunes, Cultures, Actions, Couleurs."""
+    """
+    Dessine une légende unique avec 4 sections :
+    - Haut gauche : Phases lunaires
+    - Haut droit : Cultures agricoles
+    - Bas gauche : Actions agricoles
+    - Bas droit : Couleurs liturgiques
+    
+    Toutes les données sont chargées depuis les CSV globaux.
+    
+    Args:
+        c: Canvas ReportLab
+        x, y: Coordonnées en bas à gauche de la légende
+        width: Largeur de la légende
+        height: Hauteur de la légende
+        global_data: Dictionnaire contenant les données globales
+    """
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
     c.setFillColor(HexColor('#FFF9C4'))
