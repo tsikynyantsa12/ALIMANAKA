@@ -16,6 +16,13 @@ def draw_background(c, width, height):
         # Full page background - stretch to fill completely without deformation
         # Image is drawn from 0,0 to cover entire page
         c.drawImage(bg_path, 0, 0, width=width, height=height, mask='auto')
+        
+        # Very subtle overlay (7% opacity) for enhanced text readability
+        # without hiding the background image
+        c.setFillColor(HexColor("#FFFFFF"))
+        c.setFillAlpha(0.07)
+        c.rect(0, 0, width, height, fill=1, stroke=0)
+        c.setFillAlpha(1.0)
         c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):

@@ -53,14 +53,15 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     canvas.line(x, y, x + width, y)
     canvas.restoreState()
     
-    # Day Typography - Sundays in soft red, weekdays in white
-    day_color = HexColor("#E8B4B8") if is_sunday else HexColor("#FFFFFF")  # Soft red for Sunday
+    # Day Typography - Sundays in soft red, weekdays in warm white
+    # Warm white (#F5F5F0) for better harmony, soft red for Sundays
+    day_color = HexColor("#E8B4B8") if is_sunday else HexColor("#F5F5F0")  # Soft red or warm white
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
     canvas.drawString(x + 6, y + height - 14, str(day_num))
     
-    # Day name - lighter for secondary hierarchy
-    canvas.setFillColor(HexColor("#FFFACD"))
+    # Day name - soft light tone for secondary hierarchy
+    canvas.setFillColor(HexColor("#F0E68C"))  # Softer light yellow
     canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
     canvas.drawString(x + 6, y + 6, day_info["weekday"][:3].upper())
     

@@ -1,0 +1,74 @@
+You are an expert Python UI/UX designer and PDF layout specialist.
+
+TASK:
+Create a professional multi-month calendar layout using Python and the ReportLab library.
+
+PRIMARY LIBRARY:
+- Python + ReportLab (canvas + platypus)
+- High-quality PDF output
+
+BACKGROUND IMAGE RULES:
+- Use a full-page HD background image
+- The image must remain clearly visible and recognizable
+- The background image must NOT be hidden or replaced
+
+OPTIONAL READABILITY ENHANCEMENT (VERY LIMITED):
+- Allow ONLY ONE of the following:
+  - Very subtle blur (maximum 2–4%)
+  - OR a very light transparent overlay (opacity max 5–8%)
+- The image must remain easy to see, sharp, and detailed
+- No dark masks, no strong blur, no heavy opacity
+
+LAYOUT PRINCIPLES:
+- Calendar content is placed above the background
+- Layout must feel light, elegant, and breathable
+- Avoid heavy blocks or opaque containers
+
+TEXT & STYLE IMPROVEMENTS:
+- Improve text readability using:
+  - refined color contrast
+  - subtle text-shadow
+  - clean font hierarchy
+- Never fully block the background image
+
+TYPOGRAPHY:
+- Use DejaVu Sans or similar professional sans-serif font
+- Clear hierarchy:
+  - Main title: large, bold
+  - Month names: uppercase, medium-bold, spaced letters
+  - Day numbers: regular weight
+  - Events: smaller, clean, readable
+- Use consistent line spacing
+
+COLOR PALETTE (ENHANCED BUT SOFT):
+- Text: warm white or soft charcoal (not pure black)
+- Sundays: muted red
+- Religious events: soft blue
+- Agricultural activities: natural green
+- Lunar phases: neutral gray or silver
+- Avoid saturated or neon colors
+
+CALENDAR STRUCTURE:
+- Multi-month layout with columns
+- Thin separators between months
+- Horizontal rhythm for weeks
+- No solid background blocks
+
+EVENT DISPLAY:
+- Icon + text only
+- One icon per event
+- Icons must be simple, small, and aligned
+
+TODAY HIGHLIGHT:
+- Thin outline or gentle glow
+- No background fill
+
+FINAL OUTPUT:
+- Elegant, modern calendar
+- Background image remains clearly visible
+- Improved readability without visual aggression
+- Suitable for church, agricultural, and community calendars
+- Print-friendly and screen-friendly
+
+GOAL:
+Enhance readability and visual harmony while preserving the beauty and visibility of the background image.
