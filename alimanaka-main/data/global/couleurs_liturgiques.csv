@@ -1,5 +1,5 @@
-id,couleur,code_hex,signification,description
-vert,Vert,#a8d5ba,Temps ordinaire,"Symbolise l'espérance et la croissance spirituelle. Utilisé pendant les périodes ordinaires de l'année liturgique, en dehors des grands temps de célébration."
-rouge,Rouge,#f1948a,Martyrs / Esprit Saint,"Représente le sang des martyrs et le feu de l'Esprit Saint. Utilisé pour les fêtes des martyrs, la Pentecôte et certaines fêtes apostoliques."
-violet,Violet,#c39bd3,Avent / Carême,"Symbolise la pénitence, la prière et la préparation spirituelle. Utilisé pendant l'Avent (préparation à Noël) et le Carême (préparation à Pâques)."
-blanc,Blanc,#fefefe,Fêtes du Christ,"Représente la pureté, la joie et la victoire du Christ. Utilisé pour Noël, Pâques, l'Épiphanie et les fêtes mariales."
+id,couleur,code_hex,signification
+vert,Vert,#a8d5ba,Temps ordinaire
+rouge,Rouge,#f1948a,Martyrs / Esprit Saint
+violet,Violet,#c39bd3,Avent / Carême
+blanc,Blanc,#fefefe,Fêtes du Christ
