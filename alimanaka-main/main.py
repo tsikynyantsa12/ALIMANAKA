@@ -153,17 +153,18 @@ def draw_technical_legend(c, x, y, width, height, global_data):
     col_width = width / 2 - 8
     col1_x = x + 5
     col2_x = x + width/2 + 2
+    line_height = 9  # Interligne amélioré
     
     # ===== HAUT: Lunes et Cultures =====
-    top_y = y + height - 20
+    top_y = y + height - 18
     
     # Lunes (colonne gauche - haut)
     if not global_data["phases"].empty:
-        c.setFont("Helvetica-Bold", 6)
+        c.setFont("Helvetica-Bold", 6.5)
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col1_x, top_y, "• Lunes")
         c.setFillColor(COLORS['black'])
-        temp_y = top_y - 7
+        temp_y = top_y - 8
         for _, row in global_data["phases"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['phase']).strip()
@@ -171,17 +172,17 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             if icon_path and os.path.exists(icon_path):
                 try: c.drawImage(icon_path, col1_x, temp_y - 3, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 5)
+            c.setFont("Helvetica", 5.5)
             c.drawString(col1_x + 9, temp_y, label[:12])
-            temp_y -= 7
+            temp_y -= line_height
 
     # Cultures (colonne droite - haut)
     if not global_data["cultures"].empty:
-        c.setFont("Helvetica-Bold", 6)
+        c.setFont("Helvetica-Bold", 6.5)
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col2_x, top_y, "• Cultures")
         c.setFillColor(COLORS['black'])
-        temp_y = top_y - 7
+        temp_y = top_y - 8
         for _, row in global_data["cultures"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['culture']).strip()
@@ -189,46 +190,46 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             if icon_path and os.path.exists(icon_path):
                 try: c.drawImage(icon_path, col2_x, temp_y - 3, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 5)
+            c.setFont("Helvetica", 5.5)
             c.drawString(col2_x + 9, temp_y, label[:12])
-            temp_y -= 7
+            temp_y -= line_height
 
     # ===== BAS: Actions et Couleurs =====
-    bottom_y = y + 22
+    bottom_y = y + 24
     
     # Actions (colonne gauche - bas)
     if not global_data["actions"].empty:
-        c.setFont("Helvetica-Bold", 6)
+        c.setFont("Helvetica-Bold", 6.5)
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col1_x, bottom_y, "• Actions")
         c.setFillColor(COLORS['black'])
-        act_y = bottom_y - 7
+        act_y = bottom_y - 8
         act_x = col1_x
         step_x = col_width / 2
         act_count = 0
         for _, row in global_data["actions"].head(4).iterrows():
             if act_count == 2:
                 act_x = col1_x
-                act_y -= 7
+                act_y -= line_height
             icon_id = str(row['id']).strip().lower()
             label = str(row['action']).strip()
             icon_path = get_agri_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
                 try: c.drawImage(icon_path, act_x, act_y - 4, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.setFont("Helvetica", 5)
+            c.setFont("Helvetica", 5.5)
             c.drawString(act_x + 8, act_y - 1, label[:8])
             act_x += step_x
             act_count += 1
 
-    # Couleurs liturgiques (colonne droite - bas) - Mise en page propre
+    # Couleurs liturgiques (colonne droite - bas) - Mise en page spacieuse
     if not global_data["couleurs"].empty:
-        c.setFont("Helvetica-Bold", 6)
+        c.setFont("Helvetica-Bold", 6.5)
         c.setFillColor(HexColor('#1A237E'))
         c.drawString(col2_x, bottom_y, "• Couleurs")
         c.setFillColor(COLORS['black'])
         
-        color_y = bottom_y - 7
+        color_y = bottom_y - 8
         color_x1 = col2_x
         color_x2 = col2_x + (col_width / 2)
         color_count = 0
@@ -245,7 +246,7 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             
             # Disposition : 2 colonnes
             if color_count == 2:
-                color_y = bottom_y - 7
+                color_y = bottom_y - 8
                 color_x1 = color_x2
             
             current_x = color_x1
@@ -258,12 +259,12 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             
             # Nom couleur + signification compacte
             c.setFillColor(COLORS['black'])
-            c.setFont("Helvetica-Bold", 4.5)
+            c.setFont("Helvetica-Bold", 5)
             c.drawString(current_x + 8, color_y - 1, color_name)
-            c.setFont("Helvetica", 4)
-            c.drawString(current_x + 8, color_y - 4, signification[:14])
+            c.setFont("Helvetica", 4.5)
+            c.drawString(current_x + 8, color_y - 4.5, signification[:14])
             
-            color_y -= 7
+            color_y -= line_height
             color_count += 1
             
     c.restoreState()
