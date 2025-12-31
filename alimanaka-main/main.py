@@ -84,74 +84,6 @@ def draw_header(c, width, height, page_num, global_data):
     c.restoreState()
     return header_height
 
-def draw_liturgical_legend(c, x, y, width, height, global_data):
-    """Dessine une légende détaillée des couleurs liturgiques."""
-    c.saveState()
-    c.setFillColor(HexColor('#F3E5F5'))
-    c.roundRect(x, y, width, height, 8, fill=1, stroke=0)
-    
-    c.setStrokeColor(HexColor('#CE93D8'))
-    c.setLineWidth(1)
-    c.roundRect(x, y, width, height, 8, stroke=1, fill=0)
-    
-    c.setFillColor(HexColor('#6A1B9A'))
-    header_rect_h = 14
-    c.roundRect(x, y + height - header_rect_h, width, header_rect_h, 4, fill=1, stroke=0)
-    c.setFillColor(COLORS['white'])
-    c.setFont("Helvetica-Bold", 8)
-    c.drawCentredString(x + width/2, y + height - header_rect_h + 4, "COULEURS LITURGIQUES")
-    
-    c.setFillColor(HexColor('#6A1B9A'))
-    curr_y = y + height - 22
-    col1_x = x + 5
-    
-    if not global_data["couleurs"].empty:
-        for _, row in global_data["couleurs"].iterrows():
-            color_id = str(row['id']).strip().lower()
-            color_name = str(row['couleur']).strip()
-            description = str(row.get('description', '')).strip()
-            hex_code = str(row['code_hex']).strip()
-            
-            # Carré de couleur
-            try:
-                color_obj = HexColor(hex_code)
-            except:
-                color_obj = HexColor("#a8d5ba")
-            
-            c.setFillColor(color_obj)
-            c.setLineWidth(0.5)
-            c.setStrokeColor(HexColor('#333333'))
-            c.rect(col1_x, curr_y - 6, 8, 8, fill=1, stroke=1)
-            
-            # Nom de la couleur
-            c.setFillColor(HexColor('#6A1B9A'))
-            c.setFont("Helvetica-Bold", 7)
-            c.drawString(col1_x + 12, curr_y - 3, color_name)
-            
-            # Description
-            c.setFillColor(HexColor('#333333'))
-            c.setFont("Helvetica", 5.5)
-            desc_x = col1_x + 12
-            max_width = width - 20
-            
-            # Truncate and wrap description
-            if len(description) > 80:
-                words = description.split()
-                line1 = ""
-                for word in words:
-                    if len(line1 + " " + word) < 80:
-                        line1 += " " + word
-                    else:
-                        break
-                c.drawString(desc_x, curr_y - 10, line1.strip())
-                curr_y -= 5
-            else:
-                c.drawString(desc_x, curr_y - 10, description)
-            
-            curr_y -= 12
-    
-    c.restoreState()
-
 def draw_technical_legend(c, x, y, width, height, global_data):
     """Dessine une légende technique centrée sur son espace."""
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
@@ -229,6 +161,32 @@ def draw_technical_legend(c, x, y, width, height, global_data):
             c.setFont("Helvetica", 5)
             c.drawString(curr_act_x + 9, temp_y + 2, label[:10])
             curr_act_x += step_x
+    
+    # Couleurs liturgiques en bas
+    if not global_data["couleurs"].empty:
+        temp_y = y + 5
+        c.setFont("Helvetica-Bold", 6)
+        c.setFillColor(HexColor('#1A237E'))
+        c.drawString(col2_x, temp_y + 10, "• Couleurs")
+        c.setFillColor(COLORS['black'])
+        color_y = temp_y
+        for _, row in global_data["couleurs"].iterrows():
+            color_name = str(row['couleur']).strip()
+            hex_code = str(row['code_hex']).strip()
+            try:
+                color_obj = HexColor(hex_code)
+            except:
+                color_obj = HexColor("#a8d5ba")
+            
+            c.setFillColor(color_obj)
+            c.setLineWidth(0.3)
+            c.setStrokeColor(HexColor('#333333'))
+            c.rect(col2_x, color_y - 4, 6, 6, fill=1, stroke=1)
+            
+            c.setFillColor(COLORS['black'])
+            c.setFont("Helvetica", 5)
+            c.drawString(col2_x + 8, color_y - 2, color_name[:12])
+            color_y -= 8
             
     c.restoreState()
 
@@ -293,12 +251,6 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     
     legend_y = MARGIN + 5 * scale_factor
     draw_technical_legend(c, MARGIN, legend_y, photo_col_width - 5 * scale_factor, legend_h, global_data)
-    
-    # Légende des couleurs liturgiques (côté droit inférieur)
-    litur_legend_h = content_h * 0.25
-    litur_legend_y = MARGIN + 5 * scale_factor
-    litur_legend_x = width - MARGIN - photo_col_width + 5 * scale_factor
-    draw_liturgical_legend(c, litur_legend_x, litur_legend_y, photo_col_width - 10 * scale_factor, litur_legend_h, global_data)
 
     for i, month in enumerate(range(start_month, end_month + 1)):
         x = MARGIN + photo_col_width + i * month_col_width
