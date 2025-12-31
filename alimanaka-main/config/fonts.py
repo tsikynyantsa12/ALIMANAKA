@@ -5,10 +5,10 @@ FONT_BOLD = "Helvetica-Bold"
 FONT_REGULAR = "Helvetica"
 FONT_ITALIC = "Helvetica-Oblique"
 
-# Aggressive font reduction for body to reclaim space for header
+# Font sizes optimized for readability
 SIZE_MONTH_TITLE = 9
 SIZE_DAY_NUM = 7
-SIZE_DAY_NAME = 4
+SIZE_DAY_NAME = 5.5  # Increased from 4 for better visibility
 SIZE_PROGRAM = 6
 SIZE_VERSE = 5
 

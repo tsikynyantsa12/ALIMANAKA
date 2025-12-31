@@ -1,4 +1,5 @@
 import pandas as pd
+from reportlab.lib.colors import HexColor
 from config.colors import COLOR_TEXT, COLOR_TEXT_SECONDARY, COLOR_DIMANCHE, COLOR_GRID
 from config.fonts import FONT_BOLD, FONT_REGULAR, FONT_ITALIC, SIZE_DAY_NUM, SIZE_DAY_NAME, SIZE_PROGRAM, SIZE_VERSE
 from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
@@ -63,13 +64,14 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     canvas.setFillAlpha(1.0)
     canvas.restoreState()
     
-    # Day Typography
-    canvas.setFillColor(COLOR_DIMANCHE if is_sunday else COLOR_TEXT)
+    # Day Typography - with white stroke for visibility over photo
+    canvas.setFillColor(HexColor("#FFFFFF"))
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
     canvas.drawString(x + 6, y + height - 14, str(day_num))
     
-    canvas.setFillColor(COLOR_TEXT_SECONDARY)
-    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME - 3)
+    # Day name with contrasting color
+    canvas.setFillColor(HexColor("#FFFACD"))
+    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
     canvas.drawString(x + 6, y + 6, day_info["weekday"][:3].upper())
     
     content_x = x + 26

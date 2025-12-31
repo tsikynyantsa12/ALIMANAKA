@@ -13,8 +13,9 @@ def draw_background(c, width, height):
     bg_path = "assets/images/background_betafo.jpg"
     if os.path.exists(bg_path):
         c.saveState()
-        # Full page background - preserve aspect ratio and fill completely
-        c.drawImage(bg_path, 0, 0, width=width, height=height, mask='auto', preserveAspectRatio=True)
+        # Full page background - stretch to fill completely without deformation
+        # Image is drawn from 0,0 to cover entire page
+        c.drawImage(bg_path, 0, 0, width=width, height=height, mask='auto')
         c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):

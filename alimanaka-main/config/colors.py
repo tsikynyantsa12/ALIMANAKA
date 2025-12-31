@@ -24,11 +24,11 @@ def get_liturgical_colors(global_data=None):
             mapping[k] = v
     return mapping
 
-# Design System Colors (Cohesive & Accessible)
-COLOR_TEXT = HexColor("#2C2C2C")                # Rich dark gray
-COLOR_TEXT_SECONDARY = HexColor("#666666")     # Medium gray for secondary text
-COLOR_HEADER = HexColor("#1A3A52")             # Deep blue for headers
-COLOR_GRID = Color(0, 0, 0, alpha=0.12)       # Subtle grid lines
+# Design System Colors (Cohesive & Accessible - Light for photo background)
+COLOR_TEXT = HexColor("#FFFFFF")                # White for maximum contrast with photo
+COLOR_TEXT_SECONDARY = HexColor("#F0F0F0")     # Light gray for secondary text
+COLOR_HEADER = HexColor("#FFFACD")             # Light yellow for headers (good contrast)
+COLOR_GRID = Color(255, 255, 255, alpha=0.25) # White grid lines
 COLOR_BACKGROUND = HexColor("#FAFAFA")        # Very light gray background
 
 # Semantic Colors
