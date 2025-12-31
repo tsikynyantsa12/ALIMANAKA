@@ -1,7 +1,7 @@
 modules = ["python-3.11"]
 [nix]
 channel = "stable-25_05"
-packages = ["unzip"]
+packages = ["freetype", "glibcLocales", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "unzip", "zlib"]
 
 [agent]
 expertMode = true
@@ -22,9 +22,9 @@ args = "Calendar Generator"
 name = "Calendar Generator"
 author = "agent"
 
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "cd alimanaka-main && python3 main.py && echo \"✓ Calendar generated successfully at output/calendrier_A3.pdf\""
-
 [workflows.workflow.metadata]
 outputType = "console"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd alimanaka-main && python main.py"
