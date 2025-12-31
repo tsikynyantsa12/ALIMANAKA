@@ -24,16 +24,15 @@ def get_liturgical_colors(global_data=None):
             mapping[k] = v
     return mapping
 
-# Design System Colors (Cohesive & Accessible - Light for photo background)
-# Updated with harmonized palette per design spec
-COLOR_TEXT = HexColor("#FFFFFF")                # White for maximum contrast with photo
-COLOR_TEXT_SECONDARY = HexColor("#F0F0F0")     # Light gray for secondary text
-COLOR_HEADER = HexColor("#FFFFFF")             # White for main header (primary text)
-COLOR_HEADER_ACCENT = HexColor("#F4C430")      # Gold for accent text (Batalo, keywords)
-COLOR_DARK_BLUE = HexColor("#000032")          # Dark blue for background/accents
-COLOR_HEADER_BG = Color(0, 0, 50, alpha=0.15) # Semi-transparent dark blue background (15% opacity)
-COLOR_GRID = Color(255, 255, 255, alpha=0.25) # White grid lines
-COLOR_BACKGROUND = HexColor("#FAFAFA")        # Very light gray background
+# Système de couleurs pour le design (Cohérent et Accessible)
+COLOR_TEXT = HexColor("#1A1A1A")                # Anthracite pour une meilleure lisibilité sur fond clair
+COLOR_TEXT_SECONDARY = HexColor("#4A4A4A")     # Gris foncé pour le texte secondaire
+COLOR_HEADER = HexColor("#003366")             # Bleu marine pour les titres principaux
+COLOR_HEADER_ACCENT = HexColor("#8B0000")      # Rouge brique pour les accents (Batalo, mots-clés)
+COLOR_DARK_BLUE = HexColor("#001F3F")          # Bleu nuit pour les contrastes
+COLOR_HEADER_BG = Color(0, 51, 102, alpha=0.05) # Bleu très pâle (5% d'opacité) pour le fond du header
+COLOR_GRID = Color(0, 0, 0, alpha=0.15)         # Noir très léger (15% d'opacité) pour les lignes de grille
+COLOR_BACKGROUND = HexColor("#FFFFFF")        # Fond blanc pur pour une impression propre
 
 # Semantic Colors
 COLOR_MESSE = HexColor("#4A6FA5")              # Service blue
