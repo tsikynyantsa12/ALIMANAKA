@@ -48,8 +48,8 @@ def draw_wave_decoration(c, width, height, color, position='top'):
 def draw_header(c, width, height, page_num, global_data):
     """Dessine l'en-tête ultra-compact en 3 colonnes."""
     logo_eglise = "assets/images/logo_eglise.png"
-    # Réduction à 9% de la hauteur de page pour un en-tête très "fit"
-    header_height = height * 0.09
+    # Réduction à 8% de la hauteur de page pour un en-tête très "fit"
+    header_height = height * 0.08
     
     c.saveState()
     # Ligne de séparation sous l'en-tête
@@ -62,21 +62,27 @@ def draw_header(c, width, height, page_num, global_data):
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 25, height - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
     
-    # 2. Colonne Centrale : Textes CSV
+    # 2. Colonne Centrale : Textes CSV entetes.csv
     c.setFillColor(HexColor('#1A237E'))
     if not global_data["entetes"].empty:
-        data = global_data["entetes"].iloc[0]
-        c.setFont("Helvetica-Bold", 16)
-        c.drawCentredString(width/2, height - header_height * 0.45, str(data.get('texte', 'FIANGONANA LOTERANA MALAGASY')))
-        
-        if len(global_data["entetes"]) > 1:
-            subtitle = str(global_data["entetes"].iloc[1].get('texte', ''))
-            c.setFont("Helvetica", 9)
-            c.drawCentredString(width/2, height - header_height * 0.75, subtitle)
+        # On affiche toutes les lignes de texte disponibles dans le CSV pour le centre
+        curr_y = height - 10
+        for _, row in global_data["entetes"].iterrows():
+            text = str(row.get('texte', '')).strip()
+            if text:
+                # La première ligne (ALIMANAKA ou Nom Eglise) est plus grosse
+                if _ == len(global_data["entetes"]) - 1: # Si c'est la dernière ligne (ALIMANAKA 2026)
+                    c.setFont("Helvetica-Bold", 14)
+                elif _ == 0: # Si c'est la première ligne (Fiangonana Loterana Malagasy)
+                    c.setFont("Helvetica-Bold", 12)
+                else:
+                    c.setFont("Helvetica", 8)
+                c.drawCentredString(width/2, curr_y, text)
+                curr_y -= (c._fontsize + 2)
     
-    # 3. Colonne Droite : Année
-    c.setFont("Helvetica-Bold", 20)
-    c.drawCentredString(width - 50, height - header_height * 0.55, "2026")
+    # 3. Colonne Droite : Année 2026
+    c.setFont("Helvetica-Bold", 18)
+    c.drawCentredString(width - 50, height - header_height * 0.5, "2026")
     
     c.restoreState()
     return header_height
@@ -205,13 +211,13 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     header_h = draw_header(c, width, height, page_num, global_data)
     draw_wave_decoration(c, width, height, COLORS['gold'], 'bottom')
 
-    # Zone utile optimisée : le calendrier commence 8 points sous le header
-    content_h = height - header_h - margin_y - 10 * scale_factor
-    photo_h = content_h * 0.42
+    # Zone utile optimisée : le calendrier commence encore plus près du header
+    content_h = height - header_h - margin_y - 5 * scale_factor
+    photo_h = content_h * 0.43
     legend_h = content_h * 0.18
     
-    # Point d'ancrage remonté : seulement 8 pts sous la ligne du header
-    start_y = height - header_h - 8 * scale_factor
+    # Point d'ancrage remonté : seulement 5 pts sous la ligne du header
+    start_y = height - header_h - 5 * scale_factor
     
     # Marges entre mois augmentées
     month_margin = 12 * scale_factor
