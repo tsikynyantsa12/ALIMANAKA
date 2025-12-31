@@ -1,0 +1,92 @@
+You are an expert Python developer and UI designer.
+
+TASK:
+Generate a high-quality calendar layout using Python with the ReportLab library.
+
+MANDATORY LIBRARY:
+- Use Python + ReportLab ONLY (canvas, platypus, styles)
+- Optimize for PDF generation and print quality
+
+STRICT VISUAL RULES (NON-NEGOTIABLE):
+- DO NOT blur the background image
+- DO NOT darken the image
+- DO NOT add opaque overlays
+- DO NOT hide or mask any part of the background
+- The background photo must remain FULLY visible and sharp at all times
+
+BACKGROUND:
+- Use a full-page background image (HD)
+- Image must scale proportionally
+- No filters, no opacity changes
+
+LAYOUT PRINCIPLES:
+- Calendar content is drawn ON TOP of the image
+- Layout must remain fully transparent
+- Use ONLY:
+  - typography hierarchy
+  - spacing
+  - thin lines
+  - subtle text-shadow or outlines
+- Never use background rectangles behind text
+
+CALENDAR STRUCTURE:
+- Multi-month layout (months displayed side by side)
+- One column per month
+- Thin vertical separators between months
+- Consistent margins and spacing
+
+MONTH TITLES:
+- Uppercase text
+- Bold font
+- No background fill
+- Centered at the top of each column
+
+DAYS:
+- Day number aligned left
+- Day name smaller and lighter
+- Sundays in soft red text only
+- No background color
+
+TODAY HIGHLIGHT:
+- Thin circular outline around the day number
+- No fill, no shadow block
+
+EVENTS:
+- Display events as text + icon only
+- Maximum one icon per event
+- No cards, no containers, no backgrounds
+
+EVENT TYPES & ICONS:
+- Religion: Mass, Choir
+- Agriculture: Planting, Harvesting
+- Crops: Rice, Cassava, Tomato
+- Lunar phases: New Moon, Full Moon, etc.
+
+ICONS:
+- Use SVG or PNG icons (transparent background)
+- Icons must be small, consistent, and aligned with text
+
+TYPOGRAPHY:
+- Use DejaVu Sans (or compatible ReportLab font)
+- Clear font size hierarchy:
+  - Title: large and bold
+  - Month: medium bold
+  - Days: regular
+  - Events: small
+- Use very subtle text-shadow for readability
+
+COLORS:
+- White or near-white for text
+- Soft red for Sundays
+- Muted green for agriculture
+- Muted blue for religious events
+- No saturated colors
+
+OUTPUT REQUIREMENTS:
+- Generate a clean, professional PDF
+- Print-friendly
+- Background image always visible
+- Suitable for church calendar and agricultural planning
+
+GOAL:
+Maximize readability and elegance WITHOUT EVER hiding or altering the background image.

@@ -46,30 +46,20 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             specific_data = row.iloc[0]
             liturgical_color_id = str(specific_data.get('couleur_id', 'vert')).lower()
 
-    # Separation by horizontal line (1px, low opacity)
+    # Thin separator line (transparent layout, no backgrounds)
     canvas.saveState()
     canvas.setStrokeColor(COLOR_GRID)
     canvas.setLineWidth(0.5)
     canvas.line(x, y, x + width, y)
-    
-    # Larger color indicator (left bar - 5px for better visibility)
-    bg_color = COLOR_DIMANCHE if is_sunday else liturgical_colors.get(liturgical_color_id, liturgical_colors.get("vert"))
-    canvas.setFillColor(bg_color)
-    canvas.rect(x, y + 1, 4, height - 2, fill=1, stroke=0)
-    
-    # Subtle background tint (10% opacity)
-    canvas.setFillColor(bg_color)
-    canvas.setFillAlpha(0.08)
-    canvas.rect(x + 4, y + 1, width - 4, height - 2, fill=1, stroke=0)
-    canvas.setFillAlpha(1.0)
     canvas.restoreState()
     
-    # Day Typography - with white stroke for visibility over photo
-    canvas.setFillColor(HexColor("#FFFFFF"))
+    # Day Typography - Sundays in soft red, weekdays in white
+    day_color = HexColor("#E8B4B8") if is_sunday else HexColor("#FFFFFF")  # Soft red for Sunday
+    canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
     canvas.drawString(x + 6, y + height - 14, str(day_num))
     
-    # Day name with contrasting color
+    # Day name - lighter for secondary hierarchy
     canvas.setFillColor(HexColor("#FFFACD"))
     canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
     canvas.drawString(x + 6, y + 6, day_info["weekday"][:3].upper())
