@@ -1,0 +1,716 @@
+# Guide d'amélioration du Calendrier Luther Rose 2026
+
+## 🎯 Objectifs des améliorations
+
+1. **Supprimer uniquement les photos en bas** et les remplacer par des légendes
+2. **Garder les logos existants** (ne pas les modifier)
+3. **Adapter les couleurs** selon le logo Luther Rose
+4. **Style moderne avec vagues décoratives** (comme l'image de référence)
+5. **Créer un code Python** compatible avec Replit
+6. **Générer 2 versions** : Grand format détaillé + A4 simplifié
+
+---
+
+## 🎨 Palette de couleurs du logo Luther Rose
+
+```python
+COLORS = {
+    'blue_royal': '#0066CC',      # Bordure extérieure du logo
+    'red_carmin': '#DC143C',      # Cœur central
+    'black': '#000000',           # Croix
+    'white': '#FFFFFF',           # Rose/fond
+    'green': '#2E8B57',           # Feuilles
+    'gold': '#FFD700',            # Cercle doré
+    'light_blue': '#E6F2FF',      # Fond clair alternatif
+    'dark_blue': '#003D82',       # Texte foncé
+    'light_gray': '#F5F5F5',      # Dimanches
+    'orange': '#FF8C00',          # Variante orange
+}
+```
+
+---
+
+## 📐 Deux versions à générer
+
+### Version 1: **Grand Format Détaillé** (1400x1000px)
+- Calendrier complet avec tous les événements
+- Zone de légendes détaillée avec encadré coloré
+- Vagues décoratives
+- Logos existants conservés
+- Adapté pour affichage mural
+
+### Version 2: **Format A4 Simplifié** (2480x3508px à 300 DPI)
+- Calendrier compact
+- Légendes réduites (maximum 5 événements)
+- Design minimaliste
+- Logos existants conservés
+- Adapté pour impression A4
+
+---
+
+## 📋 Modifications à apporter
+
+### ✅ **À CONSERVER (ne pas modifier)**
+- Les logos Luther Rose en haut à gauche et droite
+- La taille et position des logos
+- Le fichier image du logo existant
+
+### ❌ **À SUPPRIMER**
+- Les photos en bas du calendrier uniquement
+
+### ✨ **À AJOUTER**
+- Vagues décoratives modernes
+- Zone de légendes avec encadré coloré
+- Bandeau coloré pour le nom du mois
+
+---
+
+## 💻 Extraits de code pour les modifications
+
+### 1️⃣ **Conversion des couleurs hexadécimales**
+
+```python
+def hex_to_rgb(hex_color):
+    """Convertir couleur hexadécimale en RGB"""
+    hex_color = hex_color.lstrip('#')
+    return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
+def hex_to_rgba(hex_color, alpha=255):
+    """Convertir hex en RGBA avec transparence"""
+    rgb = hex_to_rgb(hex_color)
+    return rgb + (alpha,)
+```
+
+---
+
+### 2️⃣ **Configuration des couleurs par mois (style référence)**
+
+```python
+# Couleurs alternées par mois (comme l'image de référence)
+MONTH_COLORS = {
+    1: 'blue_royal',      # Janvier - Bleu
+    2: 'red_carmin',      # Février - Rouge
+    3: 'orange',          # Mars - Orange
+    4: 'blue_royal',      # Avril - Bleu
+    5: 'green',           # Mai - Vert
+    6: 'red_carmin',      # Juin - Rouge
+    7: 'orange',          # Juillet - Orange
+    8: 'blue_royal',      # Août - Bleu
+    9: 'green',           # Septembre - Vert
+    10: 'red_carmin',     # Octobre - Rouge
+    11: 'orange',         # Novembre - Orange
+    12: 'green',          # Décembre - Vert
+}
+
+# Utilisation:
+primary_color = MONTH_COLORS[month]
+```
+
+---
+
+### 3️⃣ **Chargement des logos existants (ne pas modifier)**
+
+```python
+def load_existing_logo(logo_path):
+    """Charger le logo existant sans modification"""
+    try:
+        logo = Image.open(logo_path)
+        # Optionnel: redimensionner si nécessaire
+        # logo = logo.resize((100, 100), Image.Resampling.LANCZOS)
+        return logo
+    except FileNotFoundError:
+        print(f"⚠️ Logo non trouvé: {logo_path}")
+        return None
+
+# Utilisation:
+logo = load_existing_logo("logo_luther_rose.png")
+if logo:
+    # Positionner à gauche
+    img.paste(logo, (MARGIN, MARGIN), logo if logo.mode == 'RGBA' else None)
+    # Positionner à droite
+    img.paste(logo, (WIDTH - MARGIN - logo.width, MARGIN), 
+              logo if logo.mode == 'RGBA' else None)
+```
+
+---
+
+### 4️⃣ **Dessin de vague décorative (style moderne)**
+
+```python
+def draw_wave_decoration(draw, width, height, color, position='top'):
+    """Dessiner une vague décorative moderne"""
+    import math
+    
+    wave_height = 120
+    wave_amplitude = 40
+    
+    if position == 'top':
+        y_base = wave_height
+        direction = 1
+    else:
+        y_base = height - wave_height
+        direction = -1
+    
+    # Créer les points de la vague
+    points = []
+    for x in range(width + 10):
+        # Formule de vague sinusoïdale
+        y = y_base + direction * wave_amplitude * math.sin(x * 0.01)
+        points.append((x, y))
+    
+    # Compléter le polygone
+    if position == 'top':
+        points.append((width, 0))
+        points.append((0, 0))
+    else:
+        points.append((width, height))
+        points.append((0, height))
+    
+    # Dessiner la vague
+    draw.polygon(points, fill=hex_to_rgb(color))
+```
+
+---
+
+### 5️⃣ **Effet de damier transparent (comme l'image)**
+
+```python
+def draw_checkered_background(img, cell_size=20):
+    """Créer un fond en damier transparent"""
+    draw = ImageDraw.Draw(img)
+    width, height = img.size
+    
+    # Couleurs du damier
+    color1 = (220, 220, 220)  # Gris clair
+    color2 = (255, 255, 255)  # Blanc
+    
+    for y in range(0, height, cell_size):
+        for x in range(0, width, cell_size):
+            # Alterner les couleurs
+            color = color1 if (x // cell_size + y // cell_size) % 2 == 0 else color2
+            draw.rectangle([x, y, x + cell_size, y + cell_size], fill=color)
+```
+
+---
+
+### 6️⃣ **Bandeau coloré pour le nom du mois**
+
+```python
+def draw_month_banner(draw, width, y_pos, month_name, color):
+    """Dessiner un bandeau coloré avec le nom du mois"""
+    banner_height = 60
+    
+    # Rectangle du bandeau
+    draw.rectangle([0, y_pos, width, y_pos + banner_height], 
+                   fill=hex_to_rgb(color))
+    
+    # Texte blanc centré
+    bbox = font_large.getbbox(month_name)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+    text_x = (width - text_width) // 2
+    text_y = y_pos + (banner_height - text_height) // 2
+    
+    draw.text((text_x, text_y), month_name, 
+             fill=(255, 255, 255), font=font_large)
+```
+
+---
+
+### 7️⃣ **En-tête avec informations de l'église**
+
+```python
+def draw_header_info(draw, width, y_start):
+    """Dessiner les infos d'en-tête"""
+    church_lines = [
+        "Synoda-Piterana Loterana Malagasy",
+        "Fiteovana Betafo - Fiangonana Mahazoarivo",
+        "Fiangonana Mahazoarivo",
+        "ALIMANAKA 2026"
+    ]
+    
+    y_pos = y_start
+    for line in church_lines:
+        bbox = font_small.getbbox(line)
+        text_width = bbox[2] - bbox[0]
+        x = (width - text_width) // 2
+        draw.text((x, y_pos), line, 
+                 fill=hex_to_rgb(COLORS['black']), font=font_small)
+        y_pos += 28
+```
+
+---
+
+### 8️⃣ **Nom du mois bilingue (français/malgache)**
+
+```python
+MONTH_NAMES_FR = [
+    "JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN",
+    "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"
+]
+
+MONTH_NAMES_MG = [
+    "JANOARY", "FEBROARY", "MARTSA", "APRILY", "MEY", "JONA",
+    "JOLAY", "AOGOSITRA", "SEPTAMBRA", "OKTOBRA", "NOVAMBRA", "DESAMBRA"
+]
+
+def draw_month_name(draw, width, y_pos, month, primary_color):
+    """Dessiner le nom du mois bilingue"""
+    month_text = f"{MONTH_NAMES_FR[month-1]}"
+    
+    bbox = font_xlarge.getbbox(month_text)
+    text_width = bbox[2] - bbox[0]
+    x = (width - text_width) // 2
+    
+    draw.text((x, y_pos), month_text, 
+             fill=hex_to_rgb(primary_color), font=font_xlarge)
+```
+
+---
+
+### 9️⃣ **Grille calendrier moderne et épurée**
+
+```python
+def draw_calendar_grid(draw, year, month, x_start, y_start, 
+                       cell_width, cell_height, primary_color):
+    """Dessiner la grille du calendrier"""
+    DAY_NAMES = ["L", "M", "M", "J", "V", "S", "D"]
+    
+    # En-têtes des jours
+    for i, day in enumerate(DAY_NAMES):
+        x = x_start + i * cell_width + cell_width // 2
+        bbox = font_medium.getbbox(day)
+        text_width = bbox[2] - bbox[0]
+        draw.text((x - text_width // 2, y_start), 
+                 day, fill=hex_to_rgb(primary_color), font=font_medium)
+    
+    # Ligne sous les en-têtes
+    y_line = y_start + 35
+    draw.line([x_start, y_line, x_start + 7 * cell_width, y_line], 
+              fill=hex_to_rgb(primary_color), width=2)
+    
+    # Grille des dates
+    cal = calendar.monthcalendar(year, month)
+    y = y_line + 10
+    
+    for week in cal:
+        for i, day in enumerate(week):
+            if day == 0:
+                continue
+            
+            x = x_start + i * cell_width
+            
+            # Fond pour dimanche
+            if i == 6:
+                draw.rectangle([x+2, y+2, x+cell_width-2, y+cell_height-2], 
+                             fill=hex_to_rgb(COLORS['light_gray']))
+            
+            # Numéro du jour
+            day_str = str(day)
+            bbox = font_large.getbbox(day_str)
+            text_width = bbox[2] - bbox[0]
+            draw.text((x + (cell_width - text_width) // 2, y + 10), 
+                     day_str, fill=hex_to_rgb(COLORS['black']), 
+                     font=font_large)
+            
+            # Bordure de cellule
+            draw.rectangle([x, y, x + cell_width, y + cell_height], 
+                         outline=hex_to_rgb(primary_color), width=1)
+        
+        y += cell_height
+```
+
+---
+
+### 🔟 **Zone légendes avec encadré coloré (REMPLACE LES PHOTOS)**
+
+```python
+def draw_legend_box(draw, width, y_start, month, primary_color):
+    """Dessiner la zone de légendes en bas (remplace les photos)"""
+    box_height = 180
+    banner_height = 50
+    
+    # Bandeau coloré avec nom du mois
+    draw.rectangle([0, y_start, width, y_start + banner_height], 
+                   fill=hex_to_rgb(primary_color))
+    
+    # Nom du mois en blanc
+    month_text = f"ÉVÉNEMENTS DE {MONTH_NAMES_FR[month-1]} 2026"
+    bbox = font_large.getbbox(month_text)
+    text_width = bbox[2] - bbox[0]
+    draw.text(((width - text_width) // 2, y_start + 12), 
+             month_text, fill=(255, 255, 255), font=font_large)
+    
+    # Fond blanc pour les événements
+    draw.rectangle([0, y_start + banner_height, width, y_start + box_height], 
+                   fill=(255, 255, 255))
+    
+    # Liste des événements
+    if month in EVENTS:
+        event_y = y_start + banner_height + 20
+        for event in EVENTS[month]:
+            # Symbole selon le type
+            if event['type'] == 'dimanche':
+                symbol = "✝"
+                color = COLORS['red_carmin']
+            elif event['type'] == 'ferie':
+                symbol = "★"
+                color = COLORS['gold']
+            else:
+                symbol = "•"
+                color = COLORS['black']
+            
+            text = f"{symbol} {event['date']} - {event['text']}"
+            draw.text((40, event_y), text, 
+                     fill=hex_to_rgb(color), font=font_medium)
+            event_y += 30
+```
+
+---
+
+### 1️⃣1️⃣ **Structure des événements**
+
+```python
+EVENTS = {
+    1: [  # Janvier
+        {"date": 1, "text": "Nouvel An", "type": "ferie"},
+        {"date": 5, "text": "Dimanche Épiphanie", "type": "dimanche"},
+        {"date": 12, "text": "Dimanche 2 Épiphanie", "type": "dimanche"},
+        {"date": 19, "text": "Dimanche 3 Épiphanie", "type": "dimanche"},
+        {"date": 26, "text": "Dimanche 4 Épiphanie", "type": "dimanche"},
+    ],
+    2: [  # Février
+        {"date": 1, "text": "Dimanche Septuagésime", "type": "dimanche"},
+        {"date": 8, "text": "Dimanche Sexagésime", "type": "dimanche"},
+        {"date": 15, "text": "Dimanche Quinquagésime", "type": "dimanche"},
+    ],
+    # ... Ajouter pour chaque mois
+}
+```
+
+---
+
+### 1️⃣2️⃣ **VERSION GRAND FORMAT (1400x1000px)**
+
+```python
+def create_calendar_large(year, month, logo_path="logo_luther_rose.png"):
+    """Créer calendrier grand format détaillé"""
+    WIDTH, HEIGHT = 1400, 1000
+    MARGIN = 60
+    
+    # Fond avec damier
+    img = Image.new('RGB', (WIDTH, HEIGHT), (255, 255, 255))
+    draw_checkered_background(img, cell_size=20)
+    draw = ImageDraw.Draw(img)
+    
+    primary_color = COLORS[MONTH_COLORS[month]]
+    
+    # Vague décorative en haut
+    draw_wave_decoration(draw, WIDTH, HEIGHT, primary_color, 'top')
+    
+    # Charger et positionner les logos EXISTANTS (ne pas modifier)
+    logo = load_existing_logo(logo_path)
+    if logo:
+        # Logo gauche
+        img.paste(logo, (MARGIN, MARGIN), logo if logo.mode == 'RGBA' else None)
+        # Logo droite
+        img.paste(logo, (WIDTH - MARGIN - logo.width, MARGIN), 
+                  logo if logo.mode == 'RGBA' else None)
+    
+    # En-tête avec infos église
+    draw_header_info(draw, WIDTH, 180)
+    
+    # Nom du mois
+    draw_month_name(draw, WIDTH, 300, month, primary_color)
+    
+    # Barre décorative
+    draw.rectangle([MARGIN, 380, WIDTH - MARGIN, 385], 
+                   fill=hex_to_rgb(primary_color))
+    
+    # Grille calendrier
+    cell_width = (WIDTH - 2 * MARGIN) // 7
+    cell_height = 60
+    draw_calendar_grid(draw, year, month, MARGIN, 400, 
+                       cell_width, cell_height, primary_color)
+    
+    # Zone légendes en bas (REMPLACE LES PHOTOS)
+    legend_y = HEIGHT - 180
+    draw_legend_box(draw, WIDTH, legend_y, month, primary_color)
+    
+    return img
+```
+
+---
+
+### 1️⃣3️⃣ **VERSION A4 SIMPLIFIÉE (2480x3508px à 300 DPI)**
+
+```python
+def create_calendar_a4(year, month, logo_path="logo_luther_rose.png"):
+    """Créer calendrier A4 simplifié pour impression"""
+    WIDTH, HEIGHT = 2480, 3508  # A4 à 300 DPI
+    MARGIN = 200
+    
+    # Fond blanc simple
+    img = Image.new('RGB', (WIDTH, HEIGHT), (255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    
+    primary_color = COLORS[MONTH_COLORS[month]]
+    
+    # Charger et positionner le logo EXISTANT (ne pas modifier)
+    logo = load_existing_logo(logo_path)
+    if logo:
+        # Logo centré en haut
+        logo_resized = logo.resize((150, 150), Image.Resampling.LANCZOS)
+        img.paste(logo_resized, ((WIDTH - 150) // 2, MARGIN), 
+                  logo_resized if logo_resized.mode == 'RGBA' else None)
+    
+    # Nom du mois
+    y_pos = MARGIN + 200
+    month_text = f"{MONTH_NAMES_FR[month-1]} 2026"
+    bbox = font_a4_xlarge.getbbox(month_text)
+    text_width = bbox[2] - bbox[0]
+    draw.text(((WIDTH - text_width) // 2, y_pos), 
+             month_text, fill=hex_to_rgb(primary_color), font=font_a4_xlarge)
+    
+    # Ligne décorative
+    y_pos += 150
+    draw.rectangle([MARGIN, y_pos, WIDTH - MARGIN, y_pos + 8], 
+                   fill=hex_to_rgb(primary_color))
+    
+    # Grille calendrier plus grande
+    y_pos += 80
+    cell_width = (WIDTH - 2 * MARGIN) // 7
+    cell_height = 220
+    draw_calendar_grid(draw, year, month, MARGIN, y_pos, 
+                       cell_width, cell_height, primary_color)
+    
+    # Légendes simplifiées en bas (max 5 événements)
+    legend_y = HEIGHT - 800
+    draw.rectangle([MARGIN, legend_y, WIDTH - MARGIN, legend_y + 80], 
+                   fill=hex_to_rgb(primary_color))
+    
+    legend_title = "ÉVÉNEMENTS PRINCIPAUX"
+    bbox = font_a4_large.getbbox(legend_title)
+    text_width = bbox[2] - bbox[0]
+    draw.text(((WIDTH - text_width) // 2, legend_y + 20), 
+             legend_title, fill=(255, 255, 255), font=font_a4_large)
+    
+    # Liste des événements (max 5)
+    if month in EVENTS:
+        event_y = legend_y + 120
+        for event in EVENTS[month][:5]:  # Limiter à 5
+            text = f"• {event['date']} - {event['text']}"
+            draw.text((MARGIN + 50, event_y), text, 
+                     fill=hex_to_rgb(COLORS['black']), font=font_a4_medium)
+            event_y += 100
+    
+    return img
+```
+
+---
+
+### 1️⃣4️⃣ **Chargement des polices (avec tailles multiples)**
+
+```python
+try:
+    # Pour GRAND FORMAT
+    font_xlarge = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 48)
+    font_large = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32)
+    font_medium = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+    font_small = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+    
+    # Pour FORMAT A4 (plus grandes)
+    font_a4_xlarge = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 120)
+    font_a4_large = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 80)
+    font_a4_medium = ImageFont.truetype(
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 60)
+except:
+    print("⚠️ Polices système non trouvées, utilisation des polices par défaut")
+    font_xlarge = ImageFont.load_default()
+    font_large = ImageFont.load_default()
+    font_medium = ImageFont.load_default()
+    font_small = ImageFont.load_default()
+    font_a4_xlarge = ImageFont.load_default()
+    font_a4_large = ImageFont.load_default()
+    font_a4_medium = ImageFont.load_default()
+```
+
+---
+
+### 1️⃣5️⃣ **Génération des deux versions**
+
+```python
+def generate_both_versions(year=2026, logo_path="logo_luther_rose.png"):
+    """Générer les deux versions pour tous les mois"""
+    import os
+    
+    # Créer les dossiers de sortie
+    os.makedirs("calendrier_grand_format", exist_ok=True)
+    os.makedirs("calendrier_a4", exist_ok=True)
+    
+    print(f"🗓️  Génération du calendrier {year}...\n")
+    
+    for month in range(1, 13):
+        month_name = MONTH_NAMES_FR[month-1]
+        print(f"  📅 {month_name}...")
+        
+        # Version grand format (1400x1000)
+        img_large = create_calendar_large(year, month, logo_path)
+        filename_large = f"calendrier_grand_format/{year}_{month:02d}_{month_name.lower()}.png"
+        img_large.save(filename_large, quality=95, dpi=(300, 300))
+        print(f"     ✓ Grand format: {filename_large}")
+        
+        # Version A4 (2480x3508)
+        img_a4 = create_calendar_a4(year, month, logo_path)
+        filename_a4 = f"calendrier_a4/{year}_{month:02d}_{month_name.lower()}_a4.png"
+        img_a4.save(filename_a4, quality=95, dpi=(300, 300))
+        print(f"     ✓ A4: {filename_a4}\n")
+    
+    print("✅ Génération terminée!")
+    print(f"   - Grand format: calendrier_grand_format/")
+    print(f"   - A4: calendrier_a4/")
+
+# Point d'entrée
+if __name__ == "__main__":
+    # Spécifier le chemin vers votre logo existant
+    generate_both_versions(2026, "logo_luther_rose.png")
+```
+
+---
+
+## 🚀 Instructions pour Replit
+
+### 1. **Préparer le projet**
+```
+1. Créer: Nouveau Repl > Python
+2. Uploader le logo: logo_luther_rose.png
+3. Créer: main.py
+```
+
+### 2. **Installer Pillow**
+Dans le Shell:
+```bash
+pip install Pillow
+```
+
+### 3. **Structure des fichiers**
+```
+📁 Projet Replit
+├── logo_luther_rose.png        # ⚠️ VOTRE LOGO EXISTANT
+├── main.py                      # Code principal
+├── calendrier_grand_format/     # Sortie grand format (auto-créé)
+└── calendrier_a4/              # Sortie A4 (auto-créé)
+```
+
+### 4. **Imports nécessaires**
+```python
+from PIL import Image, ImageDraw, ImageFont
+import calendar
+from datetime import datetime
+import math
+import os
+```
+
+---
+
+## 🎨 Personnalisation rapide
+
+### Changer la couleur d'un mois
+```python
+MONTH_COLORS[1] = 'red_carmin'  # Janvier en rouge au lieu de bleu
+```
+
+### Modifier les dimensions
+```python
+# Grand format
+WIDTH, HEIGHT = 2000, 1400  # Plus grand
+
+# A4 reste standard
+WIDTH, HEIGHT = 2480, 3508  # Ne pas modifier pour A4
+```
+
+### Ajouter des événements
+```python
+EVENTS[3].append({
+    "date": 25,
+    "text": "Anniversaire de l'église",
+    "type": "special"
+})
+```
+
+### Changer la taille du logo
+```python
+# Dans create_calendar_a4():
+logo_resized = logo.resize((200, 200), Image.Resampling.LANCZOS)
+```
+
+---
+
+## 📝 Légende des symboles
+
+- **✝** : Dimanche / Service religieux (couleur rouge)
+- **★** : Jour férié (couleur dorée)
+- **•** : Événement spécial (couleur noire)
+
+---
+
+## ✅ Checklist des modifications
+
+### Grand Format (1400x1000px)
+- ✅ **Logos existants conservés** (gauche et droite)
+- ✅ **Photos du bas supprimées**
+- ✅ **Vague décorative** ajoutée en haut
+- ✅ **Fond en damier** pour effet moderne
+- ✅ **Zone de légendes** avec encadré coloré
+- ✅ **Bandeau coloré** pour le nom du mois
+- ✅ **Couleurs alternées** par mois
+
+### Format A4 (2480x3508px)
+- ✅ **Logo existant conservé** (centré en haut)
+- ✅ **Design simplifié** pour impression
+- ✅ **Grille plus grande** pour lisibilité
+- ✅ **Légendes limitées** à 5 événements max
+- ✅ **Pas de vagues** (version épurée)
+- ✅ **300 DPI** pour qualité d'impression
+
+---
+
+## 💡 Ordre d'exécution du code
+
+1. **Constantes** → Couleurs, noms de mois, événements
+2. **Fonctions utilitaires** → Conversion couleurs, chargement logo
+3. **Fonctions de dessin** → Vagues, damier, grille, légendes
+4. **Fonction grand format** → create_calendar_large()
+5. **Fonction A4** → create_calendar_a4()
+6. **Fonction de génération** → generate_both_versions()
+7. **Exécution** → `if __name__ == "__main__":`
+
+---
+
+## 🎯 Résultat final attendu
+
+### Grand Format
+- En-haut: Vague colorée + 2 logos existants + infos église
+- Milieu: Nom du mois + grille calendrier
+- En-bas: Bandeau coloré + légendes (REMPLACE LES PHOTOS)
+
+### Format A4
+- En-haut: Logo existant centré + nom du mois
+- Milieu: Grande grille calendrier
+- En-bas: Légendes simplifiées (max 5 événements)
+
+### Couleurs
+- Alternées par mois selon MONTH_COLORS
+- Basées sur la palette Luther Rose
+- Dimanches en gris clair
+
+### Fichiers générés
+- 12 fichiers PNG grand format (dans calendrier_grand_format/)
+- 12 fichiers PNG A4 (dans calendrier_a4/)
+- Qualité 95%, 300 DPI

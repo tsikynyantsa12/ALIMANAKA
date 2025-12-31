@@ -7,13 +7,40 @@ from layout.day_row import draw_day_row, calculate_day_height
 from utils.date_utils import get_days_in_month
 from utils.csv_loader import get_month_data, get_global_data
 from config.fonts import SIZE_HEADER_MAIN
-from config.colors import COLOR_TEXT_SECONDARY, COLOR_HEADER, COLOR_BACKGROUND, COLOR_GRID, COLOR_HEADER_BG
+from config.colors import COLORS, MONTH_COLORS, COLOR_TEXT_SECONDARY, COLOR_HEADER, COLOR_BACKGROUND, COLOR_GRID, COLOR_HEADER_BG
+import math
 
-def draw_background(c, width, height):
-    """Dessine le fond de la page (couleur blanche unie)."""
+def draw_wave_decoration(c, width, height, color, position='top'):
+    """Dessine une vague décorative moderne"""
+    wave_height = 80
+    wave_amplitude = 20
+    
     c.saveState()
-    c.setFillColor(COLOR_BACKGROUND)
-    c.rect(0, 0, width, height, fill=1, stroke=0)
+    c.setFillColor(color)
+    
+    if position == 'top':
+        y_base = height - wave_height
+        direction = 1
+    else:
+        y_base = wave_height
+        direction = -1
+    
+    p = c.beginPath()
+    if position == 'top':
+        p.moveTo(0, height)
+        for x in range(0, int(width) + 1, 5):
+            y = y_base + wave_amplitude * math.sin(x * 0.02)
+            p.lineTo(x, y)
+        p.lineTo(width, height)
+    else:
+        p.moveTo(0, 0)
+        for x in range(0, int(width) + 1, 5):
+            y = y_base + wave_amplitude * math.sin(x * 0.02)
+            p.lineTo(x, y)
+        p.lineTo(width, 0)
+    
+    p.close()
+    c.drawPath(p, fill=1, stroke=0)
     c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
@@ -21,26 +48,18 @@ def draw_header(c, width, height, page_num, global_data):
     logo_eglise = "assets/images/logo_eglise.png"
     logo_agri = "assets/images/logo_agri.png"
 
-    # Hauteur de l'en-tête (15% de la page)
     header_height = height * 0.15 
     logo_size = header_height * 0.6
 
-    # Ligne horizontale de séparation
-    c.saveState()
-    c.setStrokeColor(COLOR_HEADER)
-    c.setLineWidth(1)
-    c.line(20, height - header_height - 5, width - 20, height - header_height - 5)
-    c.restoreState()
+    draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
 
     center_y = height - header_height / 2
 
-    # Affichage des logos (gauche et droite uniquement)
     if os.path.exists(logo_eglise):
         c.drawImage(logo_eglise, 40, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
     if os.path.exists(logo_agri):
         c.drawImage(logo_agri, width - 40 - logo_size, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
 
-    # Affichage des textes d'en-tête chargés depuis le CSV
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
         curr_y = height - 25
@@ -49,102 +68,69 @@ def draw_header(c, width, height, page_num, global_data):
             if idx == 0:
                 size = SIZE_HEADER_MAIN
                 c.setFont("Helvetica-Bold", size)
-                c.setFillColor(COLOR_HEADER)
+                c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
             else:
                 size = SIZE_HEADER_MAIN * 0.6
                 c.setFont("Helvetica-Bold", size)
-                c.setFillColor(COLOR_TEXT_SECONDARY)
+                c.setFillColor(COLORS['white'])
                 c.drawCentredString(width/2, curr_y, text_content)
             curr_y -= size + 5
 
-def generate_calendar():
-    """Génère le PDF complet (A3 Paysage, 2 pages)."""
-    if not os.path.exists("output"):
-        os.makedirs("output")
-    c = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)
-    year = 2026
+def draw_legend_box(c, x, y, width, height, month, global_data):
+    """Dessine la zone de légendes en bas (remplace les photos)."""
+    month_color_key = MONTH_COLORS.get(month, 'blue_royal')
+    primary_color = COLORS.get(month_color_key, COLORS['blue_royal'])
     
-    # Page 1 : Janvier à Juin
-    draw_background(c, PAGE_SIZE[0], PAGE_SIZE[1])
-    draw_page(c, year, 1, 6, 1)
-    c.showPage()
+    c.saveState()
+    c.setStrokeColor(primary_color)
+    c.setLineWidth(1)
+    c.rect(x, y, width, height, stroke=1, fill=0)
     
-    # Page 2 : Juillet à Décembre
-    draw_background(c, PAGE_SIZE[0], PAGE_SIZE[1])
-    draw_page(c, year, 7, 12, 2)
-    c.showPage()
+    c.setFillColor(primary_color)
+    c.rect(x, y + height - 15, width, 15, fill=1, stroke=0)
     
-    c.save()
-
-def draw_page(c, year, start_month, end_month, page_num):
-    """Dessine une page avec une colonne de 3 photos à gauche et 6 mois à droite."""
-    width, height = PAGE_SIZE
-    margin_x = 20
-    margin_y = 20
-    header_h = height * 0.15
+    c.setFillColor(COLORS['white'])
+    c.setFont("Helvetica-Bold", 8)
+    month_names = ["JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"]
+    c.drawCentredString(x + width/2, y + height - 10, f"LÉGENDES & ÉVÉNEMENTS - {month_names[month-1]} 2026")
     
-    # Largeur de la colonne photo augmentée (20% au lieu de 15%)
-    photo_col_width = width * 0.20
-    months_area_width = width - photo_col_width - 2 * margin_x
-    month_col_width = months_area_width / 6
+    month_data = get_month_data(month)
+    curr_ly = y + height - 25
+    c.setFillColor(COLORS['black'])
+    c.setFont("Helvetica", 6)
     
-    global_data = get_global_data()
-    draw_header(c, width, height, page_num, global_data)
-    
-    # Affichage des 3 photos à gauche (uniques par page)
-    # On ajoute un espacement vertical entre les photos
-    photo_h = (height - header_h - 2 * margin_y) / 3
-    for i in range(3):
-        # Index de photo : 1-3 pour page 1, 4-6 pour page 2
-        photo_idx = (page_num - 1) * 3 + i + 1
-        photo_path = f"assets/images/photo{photo_idx}.jpg"
-        if os.path.exists(photo_path):
-            # img_y calculé pour descendre les photos sous l'en-tête
-            img_y = height - header_h - margin_y - (i + 1) * photo_h + 10
-            # Dessin de la photo avec bordure stylisée
-            c.saveState()
-            c.setStrokeColor(COLOR_GRID)
-            c.setLineWidth(0.8)
-            # Rectangle pour la photo
-            img_w = photo_col_width - 15
-            img_h_box = photo_h - 20
-            # Ombre légère simulée
-            c.setFillColor(Color(0,0,0, alpha=0.05))
-            c.rect(margin_x + 1, img_y - 1, img_w, img_h_box, stroke=0, fill=1)
-            # Bordure
-            c.setFillColor(HexColor("#FFFFFF"))
-            c.rect(margin_x, img_y, img_w, img_h_box, stroke=1, fill=1)
-            # Photo centrée dans le cadre
-            c.drawImage(photo_path, margin_x + 4, img_y + 4, width=img_w - 8, height=img_h_box - 8, preserveAspectRatio=True, anchor='c')
-            c.restoreState()
-
-    # Affichage des 6 mois de la page
-    for i, month in enumerate(range(start_month, end_month + 1)):
-        x = margin_x + photo_col_width + i * month_col_width
-        draw_month(c, x, margin_y, month_col_width - 6, height - header_h - margin_y - 10, year, month, global_data)
+    if not month_data["dimanches"].empty:
+        for _, row in month_data["dimanches"].head(5).iterrows():
+            text = f"• {row['date'].split('-')[-1]} : {row['nom_dimanche']}"
+            if len(text) > 40: text = text[:37] + "..."
+            c.drawString(x + 5, curr_ly, text)
+            curr_ly -= 8
+            if curr_ly < y + 5: break
+            
+    c.restoreState()
 
 def draw_month(c, x, y, width, height, year, month, global_data):
     """Dessine le bloc d'un mois spécifique avec bordures stylisées."""
     days = get_days_in_month(year, month)
     month_data = get_month_data(month)
     
-    # Bordure extérieure du mois (Bordures arrondies simulées)
+    month_color_key = MONTH_COLORS.get(month, 'blue_royal')
+    primary_color = COLORS.get(month_color_key, COLORS['blue_royal'])
+    
     c.saveState()
-    c.setStrokeColor(COLOR_GRID)
-    c.setLineWidth(0.8)
+    c.setStrokeColor(primary_color)
+    c.setLineWidth(1)
     c.rect(x, y, width, height, stroke=1, fill=0)
     
-    # Titre du mois avec fond stylisé
-    c.setFillColor(COLOR_HEADER_BG)
+    c.setFillColor(primary_color)
     c.rect(x, y + height - 18, width, 18, fill=1, stroke=1)
-    c.setFillColor(COLOR_HEADER)
+    c.setFillColor(COLORS['white'])
     c.setFont("Helvetica-Bold", 9)
     month_names = ["JANVIER", "FÉVRIER", "MARS", "AVRIL", "MAI", "JUIN", "JUILLET", "AOÛT", "SEPTEMBRE", "OCTOBRE", "NOVEMBRE", "DÉCEMBRE"]
     c.drawCentredString(x + width/2, y + height - 12, month_names[month-1])
     c.restoreState()
     
-    # Calcul de la hauteur disponible et mise à l'échelle des lignes de jours
     available_h = height - 20
     day_heights = [calculate_day_height(d, month_data) for d in days]
     total_req = sum(day_heights)
@@ -155,6 +141,46 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     for d, row_h in zip(days, scaled_heights):
         curr_y -= row_h
         draw_day_row(c, x, curr_y, width, row_h, d, month_data=month_data, global_data=global_data)
+
+def draw_page(c, year, start_month, end_month, page_num):
+    """Dessine une page avec 6 mois et des légendes en bas."""
+    width, height = PAGE_SIZE
+    margin_x = 20
+    margin_y = 20
+    header_h = height * 0.15
+    legend_h = 80
+    
+    months_area_width = width - 2 * margin_x
+    month_col_width = months_area_width / 6
+    
+    global_data = get_global_data()
+    draw_header(c, width, height, page_num, global_data)
+    
+    draw_wave_decoration(c, width, height, COLORS['gold'], 'bottom')
+
+    for i, month in enumerate(range(start_month, end_month + 1)):
+        x = margin_x + i * month_col_width
+        draw_month(c, x, margin_y + legend_h + 5, month_col_width - 6, height - header_h - legend_h - margin_y - 20, year, month, global_data)
+        draw_legend_box(c, x, margin_y + 5, month_col_width - 6, legend_h, month, global_data)
+
+def generate_calendar():
+    """Génère le PDF complet (A3 Paysage, 2 pages)."""
+    if not os.path.exists("output"):
+        os.makedirs("output")
+    c = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)
+    year = 2026
+    
+    c.setFillColor(COLOR_BACKGROUND)
+    c.rect(0, 0, PAGE_SIZE[0], PAGE_SIZE[1], fill=1, stroke=0)
+    draw_page(c, year, 1, 6, 1)
+    c.showPage()
+    
+    c.setFillColor(COLOR_BACKGROUND)
+    c.rect(0, 0, PAGE_SIZE[0], PAGE_SIZE[1], fill=1, stroke=0)
+    draw_page(c, year, 7, 12, 2)
+    c.showPage()
+    
+    c.save()
 
 if __name__ == "__main__":
     generate_calendar()

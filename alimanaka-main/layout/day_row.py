@@ -1,6 +1,6 @@
 import pandas as pd
 from reportlab.lib.colors import HexColor
-from config.colors import COLOR_TEXT, COLOR_TEXT_SECONDARY, COLOR_DIMANCHE, COLOR_GRID, COLOR_HEADER, COLOR_SUNDAY_BG
+from config.colors import COLOR_TEXT, COLOR_TEXT_SECONDARY, COLOR_DIMANCHE, COLOR_GRID, COLOR_HEADER, COLORS
 from config.fonts import FONT_BOLD, FONT_REGULAR, FONT_ITALIC, SIZE_DAY_NUM, SIZE_DAY_NAME, SIZE_PROGRAM, SIZE_VERSE
 from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
 from reportlab.platypus import Paragraph, Frame
@@ -31,7 +31,7 @@ def calculate_day_height(day_info, month_data):
 
 def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_data=None):
     """Dessine une ligne de jour avec les informations liturgiques et agricoles."""
-    from config.colors import get_liturgical_colors
+    from config.colors import get_liturgical_colors, COLORS
     liturgical_colors = get_liturgical_colors(global_data)
     
     liturgical_color_id = "vert"
@@ -50,7 +50,7 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     # Ligne de séparation fine
     canvas.saveState()
     if is_sunday:
-        canvas.setFillColor(COLOR_SUNDAY_BG)
+        canvas.setFillColor(COLORS['light_gray'])
         canvas.rect(x, y, width, height, fill=1, stroke=0)
     
     canvas.setStrokeColor(COLOR_GRID)
@@ -66,35 +66,28 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     left_x = x + 2
     left_y = y + height - 7
     
-    # Numéro du jour (Cercle décoratif si dimanche)
-    day_color = HexColor("#8B0000") if is_sunday else HexColor("#1A1A1A")
-    if is_sunday:
-        canvas.saveState()
-        canvas.setStrokeColor(day_color)
-        canvas.setLineWidth(0.5)
-        canvas.circle(left_x + 3, left_y - 2, 5, stroke=1, fill=0)
-        canvas.restoreState()
-    
+    # Numéro du jour
+    day_color = COLORS['red_carmin'] if is_sunday else COLORS['black']
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM)
     canvas.drawString(left_x, left_y - 4, str(day_num))
     
     # Nom du jour
     left_y -= 5
-    canvas.setFillColor(COLOR_TEXT_SECONDARY)
+    canvas.setFillColor(COLORS['dark_blue'])
     canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME)
-    canvas.drawString(left_x, left_y, day_info["weekday"][:3].upper())
+    canvas.drawString(left_x, left_y - 4, day_info["weekday"][:3].upper())
     
     # Badge de couleur liturgique
     left_y -= 5
     if specific_data is not None and liturgical_color_id != "vert":
         badge_width = 10
         badge_height = 3
-        color_obj = liturgical_colors.get(liturgical_color_id, HexColor("#D3D3D3"))
+        color_obj = liturgical_colors.get(liturgical_color_id, COLORS['green'])
         canvas.setFillColor(color_obj)
         canvas.setLineWidth(0.3)
-        canvas.setStrokeColor(COLOR_TEXT_SECONDARY)
-        canvas.rect(left_x, left_y, badge_width, badge_height, fill=1, stroke=1)
+        canvas.setStrokeColor(COLORS['dark_blue'])
+        canvas.rect(left_x, left_y - 4, badge_width, badge_height, fill=1, stroke=1)
     
     # Icône de phase lunaire
     moon_path = None

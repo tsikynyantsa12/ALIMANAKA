@@ -24,22 +24,52 @@ def get_liturgical_colors(global_data=None):
             mapping[k] = v
     return mapping
 
+# Palette de couleurs du logo Luther Rose
+COLORS = {
+    'blue_royal': HexColor('#0066CC'),      # Bordure extérieure du logo
+    'red_carmin': HexColor('#DC143C'),      # Cœur central
+    'black': HexColor('#000000'),           # Croix
+    'white': HexColor('#FFFFFF'),           # Rose/fond
+    'green': HexColor('#2E8B57'),           # Feuilles
+    'gold': HexColor('#FFD700'),            # Cercle doré
+    'light_blue': HexColor('#E6F2FF'),      # Fond clair alternatif
+    'dark_blue': HexColor('#003D82'),       # Texte foncé
+    'light_gray': HexColor('#F5F5F5'),      # Dimanches
+    'orange': HexColor('#FF8C00'),          # Variante orange
+}
+
+# Couleurs alternées par mois
+MONTH_COLORS = {
+    1: 'blue_royal',      # Janvier
+    2: 'red_carmin',      # Février
+    3: 'orange',          # Mars
+    4: 'blue_royal',      # Avril
+    5: 'green',           # Mai
+    6: 'red_carmin',      # Juin
+    7: 'orange',          # Juillet
+    8: 'blue_royal',      # Août
+    9: 'green',           # Septembre
+    10: 'red_carmin',     # Octobre
+    11: 'orange',         # Novembre
+    12: 'green',          # Décembre
+}
+
 # Système de couleurs pour le design (Cohérent et Accessible)
-COLOR_TEXT = HexColor("#1A1A1A")                # Anthracite pour une meilleure lisibilité sur fond clair
-COLOR_TEXT_SECONDARY = HexColor("#4A4A4A")     # Gris foncé pour le texte secondaire
-COLOR_HEADER = HexColor("#003366")             # Bleu marine profond
-COLOR_HEADER_ACCENT = HexColor("#8B0000")      # Rouge brique pour les accents
-COLOR_DARK_BLUE = HexColor("#001F3F")          # Bleu nuit
-COLOR_HEADER_BG = Color(0, 51, 102, alpha=0.08) # Bleu très pâle
-COLOR_GRID = Color(0, 0, 0, alpha=0.12)         # Gris très léger pour la grille
-COLOR_BACKGROUND = HexColor("#FFFFFF")        # Fond blanc
-COLOR_SUNDAY_BG = Color(139, 0, 0, alpha=0.05)  # Fond rouge très léger pour les dimanches
+COLOR_TEXT = COLORS['black']
+COLOR_TEXT_SECONDARY = COLORS['dark_blue']
+COLOR_HEADER = COLORS['dark_blue']
+COLOR_HEADER_ACCENT = COLORS['red_carmin']
+COLOR_DARK_BLUE = COLORS['dark_blue']
+COLOR_HEADER_BG = Color(0, 51, 102, alpha=0.08)
+COLOR_GRID = Color(0, 0, 0, alpha=0.12)
+COLOR_BACKGROUND = COLORS['white']
+COLOR_SUNDAY_BG = Color(245/255, 245/255, 245/255, alpha=0.1) # light_gray approximation
 
 # Semantic Colors
-COLOR_MESSE = HexColor("#4A6FA5")              # Service blue
-COLOR_REUNION = HexColor("#6BA86F")            # Meeting green
-COLOR_FETE = HexColor("#C89D4A")               # Celebration gold
-COLOR_DIMANCHE = HexColor("#C44E52")           # Sunday red
-COLOR_HOLIDAY = HexColor("#8B0000")            # Holiday dark red
+COLOR_MESSE = COLORS['blue_royal']
+COLOR_REUNION = COLORS['green']
+COLOR_FETE = COLORS['gold']
+COLOR_DIMANCHE = COLORS['red_carmin']
+COLOR_HOLIDAY = COLORS['red_carmin']
 
 LITURGICAL_COLORS = get_liturgical_colors()
