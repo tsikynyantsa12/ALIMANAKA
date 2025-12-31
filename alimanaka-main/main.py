@@ -46,42 +46,50 @@ def draw_wave_decoration(c, width, height, color, position='top'):
     c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
-    """Dessine l'en-tête modernisé en 3 colonnes."""
+    """Dessine l'en-tête modernisé en 3 colonnes avec données réelles."""
     logo_eglise = "assets/images/logo_eglise.png"
-    header_height = height * 0.15
+    header_height = height * 0.12  # Réduction de la hauteur du header
     
     c.saveState()
-    # Ligne de séparation sous l'en-tête
+    # Ligne de séparation sous l'en-tête (remontée)
     c.setStrokeColor(HexColor('#1A237E'))
     c.setLineWidth(1)
     c.line(0, height - header_height, width, height - header_height)
     
     # 1. Colonne Gauche : Logo
-    logo_size = header_height * 0.7
+    logo_size = header_height * 0.8
     if os.path.exists(logo_eglise):
-        c.drawImage(logo_eglise, 40, height - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
+        c.drawImage(logo_eglise, 30, height - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
     
-    # 2. Colonne Centrale : Titre principal
-    c.setFont("Helvetica-Bold", 24)
+    # 2. Colonne Centrale : Textes du CSV entetes.csv
     c.setFillColor(HexColor('#1A237E'))
-    title = "FIANGONANA LOTERANA MALAGASY"
-    c.drawCentredString(width/2, height - header_height + header_height * 0.6, title)
-    
     if not global_data["entetes"].empty:
-        entetes_df = global_data["entetes"].sort_values('ligne')
-        if len(entetes_df) > 1:
-            subtitle = str(entetes_df.iloc[1]['texte']).strip()
-            c.setFont("Helvetica", 14)
-            c.drawCentredString(width/2, height - header_height + header_height * 0.3, subtitle)
+        # On prend la première ligne pour les infos principales
+        data = global_data["entetes"].iloc[0]
+        
+        # Ligne 1 : Nom de l'église (Gras, Grand)
+        c.setFont("Helvetica-Bold", 18)
+        c.drawCentredString(width/2, height - header_height * 0.4, str(data.get('texte', 'FIANGONANA LOTERANA MALAGASY')))
+        
+        # Ligne 2 : Détails (Synode, etc.)
+        c.setFont("Helvetica", 11)
+        # On cherche si d'autres lignes existent pour le sous-titre
+        subtitle = ""
+        if len(global_data["entetes"]) > 1:
+            subtitle = str(global_data["entetes"].iloc[1].get('texte', ''))
+        c.drawCentredString(width/2, height - header_height * 0.7, subtitle)
+    else:
+        c.setFont("Helvetica-Bold", 18)
+        c.drawCentredString(width/2, height - header_height * 0.5, "FIANGONANA LOTERANA MALAGASY")
             
-    # 3. Colonne Droite : Détails année
-    c.setFont("Helvetica-Bold", 18)
-    c.drawCentredString(width - 80, height - header_height + header_height * 0.5, "2026")
+    # 3. Colonne Droite : Année (Dynamique si possible)
+    c.setFont("Helvetica-Bold", 22)
+    c.drawCentredString(width - 60, height - header_height * 0.55, "2026")
     
     c.restoreState()
 
 def draw_technical_legend(c, x, y, width, height, global_data):
-    """Dessine une légende technique stylisée avec icônes réelles."""
+    """Dessine une légende technique optimisée sur deux colonnes."""
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
     # Couleur de fond jaune doux
@@ -93,66 +101,54 @@ def draw_technical_legend(c, x, y, width, height, global_data):
     c.roundRect(x, y, width, height, 8, stroke=1, fill=0)
     
     c.setFillColor(HexColor('#1A237E'))
-    c.roundRect(x, y + height - 15, width, 15, 5, fill=1, stroke=0)
+    header_rect_h = 12
+    c.roundRect(x, y + height - header_rect_h, width, header_rect_h, 4, fill=1, stroke=0)
     c.setFillColor(COLORS['white'])
-    c.setFont("Helvetica-Bold", 8)
-    c.drawCentredString(x + width/2, y + height - 10, "LÉGENDE")
+    c.setFont("Helvetica-Bold", 7)
+    c.drawCentredString(x + width/2, y + height - header_rect_h + 3, "LÉGENDE")
     
-    curr_y = y + height - 25
-    c.setFont("Helvetica", 6)
-    c.setFillColor(COLORS['black'])
+    icon_size = 7
+    curr_y = y + height - 22
     
-    icon_size = 8
+    # Séparation en deux colonnes internes
+    col1_x = x + 5
+    col2_x = x + width/2 + 2
     
-    # Phases lunaires réelles
+    # Colonne 1 : Lunes
     if not global_data["phases"].empty:
         c.setFont("Helvetica-Bold", 6)
-        c.drawString(x + 5, curr_y, "Lunes:")
-        curr_y -= 8
-        for _, row in global_data["phases"].head(4).iterrows():
+        c.setFillColor(HexColor('#1A237E'))
+        c.drawString(col1_x, curr_y, "• Lunes")
+        c.setFillColor(COLORS['black'])
+        temp_y = curr_y - 10
+        for _, row in global_data["phases"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['phase']).strip()
             icon_path = get_moon_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try:
-                    c.drawImage(icon_path, x + 5, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, col1_x, temp_y - 2, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.drawString(x + 15, curr_y, label)
-            curr_y -= 10
+            c.setFont("Helvetica", 5.5)
+            c.drawString(col1_x + 10, temp_y, label[:15])
+            temp_y -= 9
 
-    # Cultures réelles
+    # Colonne 2 : Cultures
     if not global_data["cultures"].empty:
-        curr_y -= 5
         c.setFont("Helvetica-Bold", 6)
-        c.drawString(x + 5, curr_y, "Cultures:")
-        curr_y -= 8
-        for _, row in global_data["cultures"].head(4).iterrows():
+        c.setFillColor(HexColor('#1A237E'))
+        c.drawString(col2_x, curr_y, "• Cultures")
+        c.setFillColor(COLORS['black'])
+        temp_y = curr_y - 10
+        for _, row in global_data["cultures"].head(3).iterrows():
             icon_id = str(row['id']).strip().lower()
             label = str(row['culture']).strip()
             icon_path = get_culture_icon(icon_id)
             if icon_path and os.path.exists(icon_path):
-                try:
-                    c.drawImage(icon_path, x + 5, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
+                try: c.drawImage(icon_path, col2_x, temp_y - 2, width=icon_size, height=icon_size, mask='auto')
                 except: pass
-            c.drawString(x + 15, curr_y, label)
-            curr_y -= 10
-            
-    # Actions réelles
-    if not global_data["actions"].empty:
-        curr_y -= 5
-        c.setFont("Helvetica-Bold", 6)
-        c.drawString(x + 5, curr_y, "Actions:")
-        curr_y -= 8
-        for _, row in global_data["actions"].head(4).iterrows():
-            icon_id = str(row['id']).strip().lower()
-            label = str(row['action']).strip()
-            icon_path = get_agri_icon(icon_id)
-            if icon_path and os.path.exists(icon_path):
-                try:
-                    c.drawImage(icon_path, x + 5, curr_y - 2, width=icon_size, height=icon_size, mask='auto')
-                except: pass
-            c.drawString(x + 15, curr_y, label)
-            curr_y -= 10
+            c.setFont("Helvetica", 5.5)
+            c.drawString(col2_x + 10, temp_y, label[:15])
+            temp_y -= 9
             
     c.restoreState()
 
@@ -171,6 +167,7 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     c.setFillColor(COLORS['white'])
     c.setFont("Helvetica-Bold", 9)
     month_names = ["JANVIER / JANOARY", "FÉVRIER / FEBROARY", "MARS / MARTSA", "AVRIL / APRILY", "MAI / MAY", "JUIN / JONA", "JUILLET / JOLAY", "AOÛT / AOGOSITRA", "SEPTEMBRE / SEPTAMBRA", "OCTOBRE / OKTOBRA", "NOVEMBRE / NOVAMBRA", "DÉCEMBRE / DESAMBRA"]
+    # Centrage parfait avec padding
     c.drawCentredString(x + width/2, y + height - 12, month_names[month-1])
     c.restoreState()
     available_h = height - 20
@@ -221,10 +218,10 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     legend_h = content_h * 0.18
     
     # Remonter les composants (start_y augmenté pour remonter le tout)
-    start_y = height - header_h - margin_y + 20 * scale_factor
+    start_y = height - header_h - margin_y + 35 * scale_factor
     
     # Marges entre mois augmentées
-    month_margin = 10 * scale_factor
+    month_margin = 12 * scale_factor
     
     for i in range(2):
         photo_idx = (page_num - 1) * 2 + i + 1

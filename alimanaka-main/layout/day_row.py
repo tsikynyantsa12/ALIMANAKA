@@ -71,8 +71,8 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     right_col_w = 30
     center_width = width - left_col_w - right_col_w
     
-    # COLONNE GAUCHE (Date)
-    left_x = x + 2
+    # COLONNE GAUCHE (Date) - Aligné sur colonne fixe
+    left_x = x + 3
     left_y = y + height - 7
     
     # Ajustement pour A4 (plus petit)
@@ -80,16 +80,21 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     if width < 150: # Seuil arbitraire pour détecter A4 ou colonnes étroites
         font_scale = 0.8
     
-    # Numéro du jour
+    # Numéro du jour - Alignement colonne fixe
     day_color = COLORS['red_carmin'] if is_sunday else COLORS['black']
     canvas.setFillColor(day_color)
     canvas.setFont(FONT_BOLD, SIZE_DAY_NUM * font_scale)
-    canvas.drawString(left_x, left_y - 4, str(day_num))
+    # Utilisation d'un x fixe pour le numéro
+    num_str = str(day_num)
+    if len(num_str) == 1:
+        canvas.drawString(left_x + 2, left_y - 4, num_str)
+    else:
+        canvas.drawString(left_x, left_y - 4, num_str)
     
-    # Nom du jour
+    # Nom du jour - Aligné sous le numéro
     left_y -= 5 * font_scale
     canvas.setFillColor(COLORS['dark_blue'])
-    canvas.setFont(FONT_REGULAR, SIZE_DAY_NAME * font_scale)
+    canvas.setFont(FONT_REGULAR, (SIZE_DAY_NAME-1) * font_scale)
     canvas.drawString(left_x, left_y - 4, day_info["weekday"][:3].upper())
     
     # Badge de couleur liturgique
