@@ -34,34 +34,47 @@ def draw_header(c, width, height, page_num, global_data):
     photo_l = f"assets/images/photo{1 if page_num == 1 else 3}.jpg"
     photo_r = f"assets/images/photo{2 if page_num == 1 else 4}.jpg"
 
-    header_height = height * 0.25
-    logo_size = header_height * 0.5
-    photo_size = header_height * 0.6
-    rose_size = header_height * 0.3
+    # Optimized header: reduced height (22% instead of 25%), larger images
+    header_height = height * 0.22
+    logo_size = header_height * 0.55
+    photo_size = header_height * 0.75  # Increased from 0.6 (25% larger)
+    rose_size = header_height * 0.35   # Slightly increased
 
-    # Subtle header background line for cohesion
+    # Subtle header separator line
     c.saveState()
     c.setStrokeColor(COLOR_HEADER)
     c.setLineWidth(1.5)
-    c.line(15, height - header_height - 5, width - 15, height - header_height - 5)
+    c.line(15, height - header_height - 3, width - 15, height - header_height - 3)
     c.restoreState()
 
+    # Center point for image alignment
+    center_y = height - header_height/2
+
+    # Left logo (church)
     if os.path.exists(logo_eglise):
-        c.drawImage(logo_eglise, 40, height - header_height/2 - logo_size/2, width=logo_size, height=logo_size, mask='auto')
-    if os.path.exists(logo_agri):
-        c.drawImage(logo_agri, width - 40 - logo_size, height - header_height/2 - logo_size/2, width=logo_size, height=logo_size, mask='auto')
+        c.drawImage(logo_eglise, 30, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
+    
+    # Center rose (decorative)
     if os.path.exists(rose_luther):
-        c.drawImage(rose_luther, width/2 - rose_size/2, height - rose_size - 10, width=rose_size, height=rose_size, mask='auto')
-
+        c.drawImage(rose_luther, width/2 - rose_size/2, height - rose_size - 5, width=rose_size, height=rose_size, mask='auto')
+    
+    # Left photo (between left logo and center)
     if os.path.exists(photo_l):
-        c.drawImage(photo_l, 40 + logo_size + 20, height - header_height/2 - photo_size/2, width=photo_size, height=photo_size, mask='auto')
+        c.drawImage(photo_l, 30 + logo_size + 15, center_y - photo_size/2, width=photo_size, height=photo_size, mask='auto')
+    
+    # Right photo (between center and right logo)
     if os.path.exists(photo_r):
-        c.drawImage(photo_r, width - 40 - logo_size - 20 - photo_size, height - header_height/2 - photo_size/2, width=photo_size, height=photo_size, mask='auto')
+        c.drawImage(photo_r, width - 30 - logo_size - 15 - photo_size, center_y - photo_size/2, width=photo_size, height=photo_size, mask='auto')
+    
+    # Right logo (agriculture)
+    if os.path.exists(logo_agri):
+        c.drawImage(logo_agri, width - 30 - logo_size, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
 
+    # Header text (title + subtitles) - compact spacing
     if not global_data["entetes"].empty:
         c.setFillColor(COLOR_HEADER)
         entetes_df = global_data["entetes"].sort_values('ligne')
-        curr_y = height - 35
+        curr_y = height - 28  # Reduced from 35 (saves 7pt)
         for idx, (_, row) in enumerate(entetes_df.iterrows()):
             if idx == 0:
                 size = SIZE_HEADER_MAIN
@@ -71,7 +84,7 @@ def draw_header(c, width, height, page_num, global_data):
                 size = SIZE_HEADER_MAIN * 0.7
             c.setFont("Helvetica-Bold", size)
             c.drawCentredString(width/2, curr_y, str(row['texte']).strip())
-            curr_y -= size + 6
+            curr_y -= size + 4  # Reduced from 6 (tighter spacing)
 
 def generate_calendar():
     c = canvas.Canvas("output/calendrier_A3.pdf", pagesize=PAGE_SIZE)
@@ -89,7 +102,7 @@ def draw_page(c, year, start_month, end_month, page_num):
     margin = 15
     col_width = (width - 2 * margin) / 6
     global_data = get_global_data()
-    header_height_req = height * 0.25
+    header_height_req = height * 0.22  # Optimized header height
     draw_header(c, width, height, page_num, global_data)
 
     for i, month in enumerate(range(start_month, end_month + 1)):
@@ -100,7 +113,8 @@ def draw_page(c, year, start_month, end_month, page_num):
             c.setLineWidth(0.5)
             c.line(x - 4, margin, x - 4, height - header_height_req - 10)
             
-        draw_month(c, x, margin, col_width - 8, height - header_height_req - 20, year, month, global_data)
+        # Gains more vertical space for calendar content (more padding below header)
+        draw_month(c, x, margin, col_width - 8, height - header_height_req - 15, year, month, global_data)
 
 def draw_month(c, x, y, width, height, year, month, global_data):
     from config.colors import COLOR_HEADER
