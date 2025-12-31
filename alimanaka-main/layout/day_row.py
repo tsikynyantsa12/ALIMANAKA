@@ -98,23 +98,21 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             phase_id = lune_row.iloc[0].get('phase_id', '')
             moon_path = get_moon_icon(str(phase_id).strip().lower())
     
-    # COLONNE CENTRALE (Texte)
-    center_x = x + 18
-    center_width = width - 40
-    event_y = y + height - 9
-    line_height = 6
-    
-    # Événement liturgique
+    # Text Content (liturgical events, readings, programs)
+    # 3a. Liturgical event name
     if specific_data is not None:
         name = specific_data.get('nom_dimanche', '')
         if pd.notna(name) and name:
             event_text = str(name)
             canvas.setFillColor(COLOR_HEADER)
             canvas.setFont(FONT_BOLD, SIZE_PROGRAM - 0.5)
-            canvas.drawString(center_x, event_y, event_text)
+            # Use Paragraph to avoid clipping
+            p = Paragraph(event_text, style_program)
+            p.wrapOn(canvas, center_width, line_height)
+            p.drawOn(canvas, center_x, event_y - 2)
             event_y -= line_height
         
-        # Lectures
+        # 3b. Readings (smaller, secondary)
         readings = []
         for col in ['lecture1', 'psaume', 'lecture2', 'evangile']:
             val = specific_data.get(col)
@@ -125,12 +123,15 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             verse = " | ".join(readings)
             canvas.setFillColor(COLOR_TEXT_SECONDARY)
             canvas.setFont(FONT_ITALIC, SIZE_VERSE - 0.5)
-            if len(verse) > 25:
-                verse = verse[:22] + "…"
-            canvas.drawString(center_x, event_y, f"« {verse} »")
-            event_y -= line_height
+            # Use Paragraph for multiline/wrapping
+            p = Paragraph(f"« {verse} »", style_verse)
+            p.wrapOn(canvas, center_width, line_height * 2)
+            p.drawOn(canvas, center_x, event_y - 4)
+            # Estimate height used (crude)
+            _, h = p.wrap(center_width, line_height * 2)
+            event_y -= h
     
-    # Programmes de l'église
+    # 3c. Church programs
     if month_data and not month_data["eglise"].empty:
         prog_df = month_data["eglise"]
         prog_row = prog_df[prog_df['date'] == date_str]
@@ -138,11 +139,15 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
             p = prog_row.iloc[0]
             text = f"{p.get('programme1', '')} {p.get('programme2', '')}".strip()
             if text:
-                if len(text) > 25:
-                    text = text[:22] + "…"
                 canvas.setFillColor(COLOR_TEXT_SECONDARY)
                 canvas.setFont(FONT_REGULAR, SIZE_PROGRAM - 1.5)
-                canvas.drawString(center_x, event_y, text)
+                # Use Paragraph
+                p = Paragraph(text, style_program) # Using style_program but smaller font is defined in drawString usually
+                # Need a specific style for programs if we want it small
+                p_style = ParagraphStyle('ProgSmall', parent=style_program, fontSize=SIZE_PROGRAM-1.5, leading=SIZE_PROGRAM)
+                p = Paragraph(text, p_style)
+                p.wrapOn(canvas, center_width, line_height * 2)
+                p.drawOn(canvas, center_x, event_y - 2)
                 event_y -= line_height
     
     # COLONNE DE DROITE (Icônes agricoles et Lune)
