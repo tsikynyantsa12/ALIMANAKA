@@ -44,54 +44,53 @@ def draw_wave_decoration(c, width, height, color, position='top'):
     c.restoreState()
 
 def draw_header(c, width, height, page_num, global_data):
-    """Dessine l'en-tête avec les logos et les titres."""
+    """Dessine l'en-tête modernisé en 3 colonnes."""
     logo_eglise = "assets/images/logo_eglise.png"
-    logo_agri = "assets/images/logo_agri.png"
-    # Augmentation de 8% par rapport à l'original (0.20 * 1.08 = 0.216)
-    header_height = height * 0.216
-    logo_size = header_height * 0.5
+    header_height = height * 0.15
     
     c.saveState()
-    c.setFillColor(COLORS['blue_royal'])
-    # On remplit le rectangle bleu pour couvrir la hauteur
-    c.rect(0, height - header_height, width, header_height, fill=1, stroke=0)
-    c.restoreState()
+    # Ligne de séparation sous l'en-tête
+    c.setStrokeColor(HexColor('#1A237E'))
+    c.setLineWidth(1)
+    c.line(0, height - header_height, width, height - header_height)
     
-    draw_wave_decoration(c, width, height, COLORS['blue_royal'], 'top')
-    
-    # Logos positionnés plus haut (center_y augmenté)
-    center_y = height - header_height / 2 + 15
+    # 1. Colonne Gauche : Logo
+    logo_size = header_height * 0.7
     if os.path.exists(logo_eglise):
-        c.drawImage(logo_eglise, 40, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
-    if os.path.exists(logo_agri):
-        c.drawImage(logo_agri, width - 40 - logo_size, center_y - logo_size/2, width=logo_size, height=logo_size, mask='auto')
+        c.drawImage(logo_eglise, 40, height - header_height + (header_height - logo_size)/2, width=logo_size, height=logo_size, mask='auto')
+    
+    # 2. Colonne Centrale : Titre principal
+    c.setFont("Helvetica-Bold", 24)
+    c.setFillColor(HexColor('#1A237E'))
+    title = "FIANGONANA LOTERANA MALAGASY"
+    c.drawCentredString(width/2, height - header_height + header_height * 0.6, title)
     
     if not global_data["entetes"].empty:
         entetes_df = global_data["entetes"].sort_values('ligne')
-        # Texte repositionné pour l'en-tête réduit
-        curr_y = height - 20
-        for idx, (_, row) in enumerate(entetes_df.iterrows()):
-            text_content = str(row['texte']).strip()
-            if idx == 0:
-                size = SIZE_HEADER_MAIN * 0.9 # Légère réduction pour l'espace
-                c.setFont("Helvetica-Bold", size)
-                c.setFillColor(COLORS['white'])
-                c.drawCentredString(width/2, curr_y, text_content)
-            else:
-                size = SIZE_HEADER_MAIN * 0.55
-                c.setFont("Helvetica-Bold", size)
-                c.setFillColor(COLORS['white'])
-                c.drawCentredString(width/2, curr_y, text_content)
-            curr_y -= size + 6
+        if len(entetes_df) > 1:
+            subtitle = str(entetes_df.iloc[1]['texte']).strip()
+            c.setFont("Helvetica", 14)
+            c.drawCentredString(width/2, height - header_height + header_height * 0.3, subtitle)
+            
+    # 3. Colonne Droite : Détails année
+    c.setFont("Helvetica-Bold", 18)
+    c.drawCentredString(width - 80, height - header_height + header_height * 0.5, "2026")
+    
+    c.restoreState()
 
 def draw_technical_legend(c, x, y, width, height):
     """Dessine une légende technique stylisée avec icônes."""
     from utils.icon_mapper import get_moon_icon, get_agri_icon, get_culture_icon
     c.saveState()
-    c.setStrokeColor(COLOR_GRID)
-    c.setLineWidth(0.8)
+    # Couleur de fond jaune doux
+    c.setFillColor(HexColor('#FFF9C4'))
+    c.roundRect(x, y, width, height, 8, fill=1, stroke=0)
+    
+    c.setStrokeColor(HexColor('#E0E0E0'))
+    c.setLineWidth(0.5)
     c.roundRect(x, y, width, height, 8, stroke=1, fill=0)
-    c.setFillColor(COLORS['blue_royal'])
+    
+    c.setFillColor(HexColor('#1A237E'))
     c.roundRect(x, y + height - 15, width, 15, 5, fill=1, stroke=0)
     c.setFillColor(COLORS['white'])
     c.setFont("Helvetica-Bold", 8)
@@ -136,14 +135,14 @@ def draw_month(c, x, y, width, height, year, month, global_data):
     """Dessine le bloc d'un mois."""
     days = get_days_in_month(year, month)
     month_data = get_month_data(month)
-    month_color_key = MONTH_COLORS.get(month, 'blue_royal')
-    primary_color = COLORS.get(month_color_key, COLORS['blue_royal'])
+    primary_color = HexColor('#1A237E') # Bleu logo pour tous les en-têtes de mois
     c.saveState()
-    c.setStrokeColor(primary_color)
-    c.setLineWidth(1)
+    c.setStrokeColor(HexColor('#E0E0E0'))
+    c.setLineWidth(0.25)
     c.roundRect(x, y, width, height, 8, stroke=1, fill=0)
+    
     c.setFillColor(primary_color)
-    c.roundRect(x, y + height - 18, width, 18, 5, fill=1, stroke=1)
+    c.roundRect(x, y + height - 18, width, 18, 5, fill=1, stroke=0)
     c.setFillColor(COLORS['white'])
     c.setFont("Helvetica-Bold", 9)
     month_names = ["JANVIER / JANOARY", "FÉVRIER / FEBROARY", "MARS / MARTSA", "AVRIL / APRILY", "MAI / MAY", "JUIN / JONA", "JUILLET / JOLAY", "AOÛT / AOGOSITRA", "SEPTEMBRE / SEPTAMBRA", "OCTOBRE / OKTOBRA", "NOVEMBRE / NOVAMBRA", "DÉCEMBRE / DESAMBRA"]
@@ -197,6 +196,9 @@ def draw_page(c, year, start_month, end_month, page_num, page_size=PAGE_SIZE):
     legend_h = content_h * 0.18
     
     start_y = height - header_h - margin_y
+    
+    # Marges entre mois augmentées
+    month_margin = 10 * scale_factor
     
     for i in range(2):
         photo_idx = (page_num - 1) * 2 + i + 1

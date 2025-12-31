@@ -52,9 +52,13 @@ def draw_day_row(canvas, x, y, width, height, day_info, month_data=None, global_
     if is_sunday:
         canvas.setFillColor(COLORS['light_gray'])
         canvas.rect(x, y, width, height, fill=1, stroke=0)
+    elif day_num % 2 == 0:
+        # Alternance de lignes pour la lisibilité
+        canvas.setFillColor(HexColor('#F5F5F5'))
+        canvas.rect(x, y, width, height, fill=1, stroke=0)
     
-    canvas.setStrokeColor(COLOR_GRID)
-    canvas.setLineWidth(0.2)
+    canvas.setStrokeColor(HexColor('#E0E0E0'))
+    canvas.setLineWidth(0.25)
     canvas.line(x, y, x + width, y)
     canvas.restoreState()
     

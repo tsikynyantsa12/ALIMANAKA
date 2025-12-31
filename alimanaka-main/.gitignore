@@ -136,9 +136,7 @@ dmypy.json
 .LSOverride
 ._*
 
-# Project-specific
-output/
-*.pdf
+
 attached_assets/
 .cache/
 
